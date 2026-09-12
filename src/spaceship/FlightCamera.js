@@ -4,19 +4,19 @@
  * smooth (lerped) transitions so switching views never pops harshly.
  */
 
-import * as THREE from 'three';
-import { CameraMode } from '../state/StateActions.js';
+import * as THREE from "three";
+import { CameraMode } from "../state/StateActions.js";
 
 const BASE_OFFSETS = {
   [CameraMode.COCKPIT]: new THREE.Vector3(0, 0.03, 0.04),
   [CameraMode.THIRD_PERSON]: new THREE.Vector3(0, 0.28, 1.25),
-  [CameraMode.CINEMATIC]: new THREE.Vector3(0.85, 0.35, 1.1)
+  [CameraMode.CINEMATIC]: new THREE.Vector3(0.85, 0.35, 1.1),
 };
 
 const LOOK_AHEAD = {
   [CameraMode.COCKPIT]: new THREE.Vector3(0, 0.02, -2.5),
   [CameraMode.THIRD_PERSON]: new THREE.Vector3(0, 0.06, -2.0),
-  [CameraMode.CINEMATIC]: new THREE.Vector3(0, 0.03, -0.5)
+  [CameraMode.CINEMATIC]: new THREE.Vector3(0, 0.03, -0.5),
 };
 
 const TRANSITION_SPEED = 10.0; // snug tracking, prevents camera lagging/rubber-banding backwards

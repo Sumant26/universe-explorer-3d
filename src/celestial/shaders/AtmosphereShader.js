@@ -4,7 +4,7 @@
  * atmosphere-bearing planets for a warm, believable halo.
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 /**
  * @param {{ color?: THREE.Color|number, intensity?: number }} [options]
@@ -14,7 +14,7 @@ export function createAtmosphereMaterial({ color = 0x6db3ff, intensity = 1.0 } =
   return new THREE.ShaderMaterial({
     uniforms: {
       uColor: { value: new THREE.Color(color) },
-      uIntensity: { value: intensity }
+      uIntensity: { value: intensity },
     },
     vertexShader: /* glsl */ `
       varying vec3 vNormal;
@@ -40,6 +40,6 @@ export function createAtmosphereMaterial({ color = 0x6db3ff, intensity = 1.0 } =
     transparent: true,
     depthWrite: false,
     side: THREE.BackSide,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
 }

@@ -4,7 +4,7 @@
  * glow rather than a harsh flat sphere.
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 /**
  * @param {{ color?: THREE.Color|number }} [options]
@@ -14,7 +14,7 @@ export function createStarCoronaMaterial({ color = 0xffd27a } = {}) {
   return new THREE.ShaderMaterial({
     uniforms: {
       uColor: { value: new THREE.Color(color) },
-      uTime: { value: 0 }
+      uTime: { value: 0 },
     },
     vertexShader: /* glsl */ `
       varying vec3 vPosition;
@@ -41,6 +41,6 @@ export function createStarCoronaMaterial({ color = 0xffd27a } = {}) {
         vec3 color = uColor * (0.75 + n * 0.5);
         gl_FragColor = vec4(color, 1.0);
       }
-    `
+    `,
   });
 }

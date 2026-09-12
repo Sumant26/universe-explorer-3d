@@ -6,7 +6,7 @@
  * and doesn't need to be globally observable app state.
  */
 
-import { FlightMode } from '../state/StateActions.js';
+import { FlightMode } from "../state/StateActions.js";
 
 export class CompassArrow {
   /**
@@ -14,7 +14,7 @@ export class CompassArrow {
    * @param {import('../state/Store.js').Store} store
    */
   constructor(root, store) {
-    if (!root) throw new Error('CompassArrow requires a root element');
+    if (!root) throw new Error("CompassArrow requires a root element");
     this.root = root;
     this.store = store;
     this._render();
@@ -37,9 +37,9 @@ export class CompassArrow {
         <span class="compass-hint">Fly toward the arrow</span>
       </div>
     `;
-    this._arrowEl = this.root.querySelector('.compass-arrow');
-    this._needleEl = this.root.querySelector('.compass-needle');
-    this._distanceEl = this.root.querySelector('.compass-distance');
+    this._arrowEl = this.root.querySelector(".compass-arrow");
+    this._needleEl = this.root.querySelector(".compass-needle");
+    this._distanceEl = this.root.querySelector(".compass-distance");
   }
 
   /** @private @param {boolean} visible */
@@ -54,8 +54,8 @@ export class CompassArrow {
     if (!bearing || !this._needleEl) return;
     // Signed yaw angle in the ship's local XZ plane (screen-space approximation).
     const yawDeg = Math.atan2(bearing.directionToTarget.x, -bearing.directionToTarget.z) * (180 / Math.PI);
-    this._needleEl.setAttribute('transform', `rotate(${yawDeg} 32 32)`);
-    this._needleEl.classList.toggle('aligned', bearing.aligned);
+    this._needleEl.setAttribute("transform", `rotate(${yawDeg} 32 32)`);
+    this._needleEl.classList.toggle("aligned", bearing.aligned);
     // This is a flight-instrument gauge showing scene-relative distance, not
     // the real astronomical distance (that lives in the Detail Panel) — so
     // it's labeled in generic "flight units" rather than km/AU/ly.

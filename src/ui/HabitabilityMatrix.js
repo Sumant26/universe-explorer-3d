@@ -5,16 +5,16 @@
  * headline score in DetailPanel can be explained rather than just trusted.
  */
 
-import { getCelestialBodyById } from '../celestial/CelestialData.js';
-import { computeHabitability } from '../physics/HabitabilityEngine.js';
-import { Actions } from '../state/StateActions.js';
+import { getCelestialBodyById } from "../celestial/CelestialData.js";
+import { computeHabitability } from "../physics/HabitabilityEngine.js";
+import { Actions } from "../state/StateActions.js";
 
 const FACTOR_LABELS = {
-  temperature: 'Temperature',
-  pressure: 'Atmospheric pressure',
-  gravity: 'Surface gravity',
-  radiation: 'Radiation shielding',
-  water: 'Liquid water'
+  temperature: "Temperature",
+  pressure: "Atmospheric pressure",
+  gravity: "Surface gravity",
+  radiation: "Radiation shielding",
+  water: "Liquid water",
 };
 
 export class HabitabilityMatrix {
@@ -23,7 +23,7 @@ export class HabitabilityMatrix {
    * @param {import('../state/Store.js').Store} store
    */
   constructor(root, store) {
-    if (!root) throw new Error('HabitabilityMatrix requires a root element');
+    if (!root) throw new Error("HabitabilityMatrix requires a root element");
     this.root = root;
     this.store = store;
     this._unsubscribe = store.subscribe(
@@ -37,7 +37,7 @@ export class HabitabilityMatrix {
   _render() {
     const state = this.store.getState();
     if (!state.ui.isHabitabilityOpen) {
-      this.root.innerHTML = '';
+      this.root.innerHTML = "";
       this.root.hidden = true;
       return;
     }
@@ -51,7 +51,7 @@ export class HabitabilityMatrix {
     try {
       result = computeHabitability(body.environment);
     } catch (err) {
-      console.error('[HabitabilityMatrix] compute failed:', err);
+      console.error("[HabitabilityMatrix] compute failed:", err);
       this.root.hidden = true;
       return;
     }
@@ -71,11 +71,11 @@ export class HabitabilityMatrix {
                 <div class="factor-bar"><div class="factor-bar-fill" style="width:${Math.round(value * 100)}%"></div></div>
               </li>`
             )
-            .join('')}
+            .join("")}
         </ul>
       </div>
     `;
-    this.root.querySelector('.matrix-close')?.addEventListener('click', () => {
+    this.root.querySelector(".matrix-close")?.addEventListener("click", () => {
       this.store.dispatch(Actions.toggleHabitability(false));
     });
   }
@@ -86,7 +86,7 @@ export class HabitabilityMatrix {
 }
 
 function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
+  const div = document.createElement("div");
+  div.textContent = str ?? "";
   return div.innerHTML;
 }

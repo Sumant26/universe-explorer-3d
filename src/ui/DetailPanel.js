@@ -5,13 +5,12 @@
  * Earth, travel time, habitability, and atmosphere.
  */
 
-import { getCelestialBodyById } from '../celestial/CelestialData.js';
-import { getSatelliteById } from '../celestial/SatelliteData.js';
-import { computeHabitability, normalizeAtmosphere } from '../physics/HabitabilityEngine.js';
-import { computeTravelBreakdown, formatDuration } from '../physics/RelativityEngine.js';
-import { formatDistance } from '../physics/CoordinateSystem.js';
-import { Actions } from '../state/StateActions.js';
-
+import { getCelestialBodyById } from "../celestial/CelestialData.js";
+import { getSatelliteById } from "../celestial/SatelliteData.js";
+import { computeHabitability, normalizeAtmosphere } from "../physics/HabitabilityEngine.js";
+import { computeTravelBreakdown, formatDuration } from "../physics/RelativityEngine.js";
+import { formatDistance } from "../physics/CoordinateSystem.js";
+import { Actions } from "../state/StateActions.js";
 
 export class DetailPanel {
   /**
@@ -19,7 +18,7 @@ export class DetailPanel {
    * @param {import('../state/Store.js').Store} store
    */
   constructor(root, store) {
-    if (!root) throw new Error('DetailPanel requires a root element');
+    if (!root) throw new Error("DetailPanel requires a root element");
     this.root = root;
     this.store = store;
     this._currentId = null;
@@ -28,7 +27,7 @@ export class DetailPanel {
       store.subscribe(
         () => this._render(),
         (s) => `${s.selectedObject}|${s.ui.isDetailPanelOpen}`
-      )
+      ),
     ];
     this._render();
   }
@@ -48,7 +47,7 @@ export class DetailPanel {
   _render() {
     const state = this.store.getState();
     if (!state.ui.isDetailPanelOpen) {
-      this.root.innerHTML = '';
+      this.root.innerHTML = "";
       this.root.hidden = true;
       return;
     }
@@ -69,8 +68,8 @@ export class DetailPanel {
     this.root.hidden = false;
     this.root.innerHTML = body ? this._renderCelestial(body) : this._renderSatellite(satellite);
 
-    this.root.querySelector('.detail-close')?.addEventListener('click', () => this.close());
-    this.root.querySelector('[data-action="open-habitability"]')?.addEventListener('click', () => {
+    this.root.querySelector(".detail-close")?.addEventListener("click", () => this.close());
+    this.root.querySelector('[data-action="open-habitability"]')?.addEventListener("click", () => {
       this.store.dispatch(Actions.toggleHabitability(true));
     });
   }
@@ -81,15 +80,15 @@ export class DetailPanel {
     try {
       habitability = computeHabitability(body.environment);
     } catch (err) {
-      console.error('[DetailPanel] habitability calc failed:', err);
-      habitability = { score: 0, classification: 'Unknown', factors: {} };
+      console.error("[DetailPanel] habitability calc failed:", err);
+      habitability = { score: 0, classification: "Unknown", factors: {} };
     }
 
     let travel;
     try {
       travel = computeTravelBreakdown(body.distanceFromEarthKm);
     } catch (err) {
-      console.error('[DetailPanel] travel calc failed:', err);
+      console.error("[DetailPanel] travel calc failed:", err);
       travel = null;
     }
 
@@ -105,14 +104,14 @@ export class DetailPanel {
         <dl class="detail-fields">
           <div><dt>Location</dt><dd>${escapeHtml(body.location)}</dd></div>
           <div><dt>Galaxy</dt><dd>${escapeHtml(body.galaxy)}</dd></div>
-          <div><dt>Solar system</dt><dd>${escapeHtml(body.solarSystem ?? 'Not applicable')}</dd></div>
+          <div><dt>Solar system</dt><dd>${escapeHtml(body.solarSystem ?? "Not applicable")}</dd></div>
           <div><dt>Distance from Earth</dt><dd>${escapeHtml(formatDistance(body.distanceFromEarthKm))}</dd></div>
-          <div><dt>Time to reach it</dt><dd>${travel ? escapeHtml(formatDuration(travel.relativistic999c.seconds)) + ' at 0.999c' : 'Unknown'}</dd></div>
-          <div><dt>Habitable?</dt><dd class="${isHabitable ? 'yes' : 'no'}">${isHabitable ? `Yes — ${habitability.classification}` : `No — ${habitability.classification}`}</dd></div>
+          <div><dt>Time to reach it</dt><dd>${travel ? escapeHtml(formatDuration(travel.relativistic999c.seconds)) + " at 0.999c" : "Unknown"}</dd></div>
+          <div><dt>Habitable?</dt><dd class="${isHabitable ? "yes" : "no"}">${isHabitable ? `Yes — ${habitability.classification}` : `No — ${habitability.classification}`}</dd></div>
           <div class="atmosphere-field"><dt>Atmosphere</dt><dd>${this._renderAtmosphere(atmosphere)}</dd></div>
         </dl>
 
-        ${travel ? this._renderTravelBreakdown(travel) : ''}
+        ${travel ? this._renderTravelBreakdown(travel) : ""}
 
         <button type="button" class="detail-habitability-score" data-action="open-habitability">
           <span>Habitability score</span>
@@ -147,17 +146,12 @@ export class DetailPanel {
     if (atmosphere.length === 0) return '<span class="no-atmosphere">No meaningful atmosphere</span>';
     return `<ul class="atmosphere-list">${atmosphere
       .map((a) => `<li><span>${escapeHtml(a.gas)}</span><span>${a.percent}%</span></li>`)
-      .join('')}</ul>`;
+      .join("")}</ul>`;
   }
 
   /** @private */
   _renderTravelBreakdown(travel) {
-    const rows = [
-      travel.lightSpeed,
-      travel.relativistic999c,
-      travel.fusionDrive01c,
-      travel.chemicalRocket
-    ];
+    const rows = [travel.lightSpeed, travel.relativistic999c, travel.fusionDrive01c, travel.chemicalRocket];
     return `
       <div class="travel-breakdown">
         <h3>How long would it take?</h3>
@@ -166,7 +160,7 @@ export class DetailPanel {
             .map(
               (r) => `<li><span>${escapeHtml(r.label)}</span><span>${escapeHtml(formatDuration(r.seconds))}</span></li>`
             )
-            .join('')}
+            .join("")}
         </ul>
       </div>
     `;
@@ -178,7 +172,7 @@ export class DetailPanel {
 }
 
 function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
+  const div = document.createElement("div");
+  div.textContent = str ?? "";
   return div.innerHTML;
 }

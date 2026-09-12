@@ -5,8 +5,8 @@
  * same as picking it from the search bar.
  */
 
-import { SATELLITES } from '../celestial/SatelliteData.js';
-import { Actions } from '../state/StateActions.js';
+import { SATELLITES } from "../celestial/SatelliteData.js";
+import { Actions } from "../state/StateActions.js";
 
 export class SatelliteList {
   /**
@@ -15,7 +15,7 @@ export class SatelliteList {
    * @param {{ onSelect?: (satelliteId: string) => void }} [handlers]
    */
   constructor(root, store, handlers = {}) {
-    if (!root) throw new Error('SatelliteList requires a root element');
+    if (!root) throw new Error("SatelliteList requires a root element");
     this.root = root;
     this.store = store;
     this._onSelect = handlers.onSelect ?? (() => {});
@@ -33,7 +33,7 @@ export class SatelliteList {
   /** @private @param {boolean} open */
   _render(open) {
     if (!open) {
-      this.root.innerHTML = '';
+      this.root.innerHTML = "";
       this.root.hidden = true;
       return;
     }
@@ -51,13 +51,13 @@ export class SatelliteList {
               <span class="satellite-name">${escapeHtml(s.name)}</span>
               <span class="satellite-meta">${escapeHtml(s.agency)} · ${s.launchYear} · ${escapeHtml(s.status)}</span>
             </li>`
-          ).join('')}
+          ).join("")}
         </ul>
       </div>
     `;
-    this.root.querySelector('.satellite-list-close')?.addEventListener('click', () => this.toggle(false));
-    this.root.querySelectorAll('.satellite-item').forEach((el) => {
-      el.addEventListener('click', () => this._onSelect(el.getAttribute('data-id')));
+    this.root.querySelector(".satellite-list-close")?.addEventListener("click", () => this.toggle(false));
+    this.root.querySelectorAll(".satellite-item").forEach((el) => {
+      el.addEventListener("click", () => this._onSelect(el.getAttribute("data-id")));
     });
   }
 
@@ -67,7 +67,7 @@ export class SatelliteList {
 }
 
 function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
+  const div = document.createElement("div");
+  div.textContent = str ?? "";
   return div.innerHTML;
 }

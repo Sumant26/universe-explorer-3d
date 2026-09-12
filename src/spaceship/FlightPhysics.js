@@ -190,7 +190,7 @@ export function computeBearing(shipPosition, shipForward, targetPosition, arriva
     directionToTarget: direction,
     angleOffsetDeg,
     aligned: angleOffsetDeg < 5,
-    arrived: distance <= arrivalRadius
+    arrived: distance <= arrivalRadius,
   };
 }
 
@@ -208,7 +208,7 @@ function rotateForward(forward, yawRad, pitchRad) {
   const up = vNormalize({
     x: right.y * f.z - right.z * f.y,
     y: right.z * f.x - right.x * f.z,
-    z: right.x * f.y - right.y * f.x
+    z: right.x * f.y - right.y * f.x,
   });
 
   // 3. Yaw rotation around local up axis (positive yaw turns right toward +right)

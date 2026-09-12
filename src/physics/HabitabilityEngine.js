@@ -8,12 +8,12 @@
 
 /** @enum {string} */
 export const OccupationClass = Object.freeze({
-  EARTH_LIKE: 'Directly Habitable',
-  DOME_REQUIRED: 'Dome Settlement Required',
-  SUBTERRANEAN: 'Subterranean / Radiation-Shielded Base',
-  EXTREME_TERRAFORMING: 'Extreme Terraforming Required',
-  GAS_OUTPOST: 'Gas Giant Cloud Outpost Only',
-  UNINHABITABLE: 'Uninhabitable'
+  EARTH_LIKE: "Directly Habitable",
+  DOME_REQUIRED: "Dome Settlement Required",
+  SUBTERRANEAN: "Subterranean / Radiation-Shielded Base",
+  EXTREME_TERRAFORMING: "Extreme Terraforming Required",
+  GAS_OUTPOST: "Gas Giant Cloud Outpost Only",
+  UNINHABITABLE: "Uninhabitable",
 });
 
 /**
@@ -38,14 +38,14 @@ export function computeHabitability(input) {
     surfaceGravityG = 0,
     radiationIndex = 10,
     hasLiquidWater = false,
-    isGasGiant = false
+    isGasGiant = false,
   } = input ?? {};
 
   if (isGasGiant) {
     return {
       score: 2,
       classification: OccupationClass.GAS_OUTPOST,
-      factors: { temperature: 0, pressure: 0, gravity: 0, radiation: 0, water: 0 }
+      factors: { temperature: 0, pressure: 0, gravity: 0, radiation: 0, water: 0 },
     };
   }
 
@@ -56,11 +56,7 @@ export function computeHabitability(input) {
   const waterFactor = hasLiquidWater ? 1 : 0;
 
   const weighted =
-    temperatureFactor * 0.3 +
-    pressureFactor * 0.2 +
-    gravityFactor * 0.15 +
-    radiationFactor * 0.2 +
-    waterFactor * 0.15;
+    temperatureFactor * 0.3 + pressureFactor * 0.2 + gravityFactor * 0.15 + radiationFactor * 0.2 + waterFactor * 0.15;
 
   const score = Math.round(clamp01(weighted) * 100);
 
@@ -72,8 +68,8 @@ export function computeHabitability(input) {
       pressure: pressureFactor,
       gravity: gravityFactor,
       radiation: radiationFactor,
-      water: waterFactor
-    }
+      water: waterFactor,
+    },
   };
 }
 

@@ -7,8 +7,8 @@
  *   warm timber dashboard with glowing analog dials, rotating mini star globe, and tiltable flight stick.
  */
 
-import * as THREE from 'three';
-import { CameraMode } from '../state/StateActions.js';
+import * as THREE from "three";
+import { CameraMode } from "../state/StateActions.js";
 
 const COZY_PALETTE = {
   porcelainCream: 0xf6efe4,
@@ -22,7 +22,7 @@ const COZY_PALETTE = {
   glowLantern: 0xffdfaa,
   glowCyan: 0x62e8ff,
   glowGreen: 0x58e890,
-  coffeeBrown: 0x3a1e0c
+  coffeeBrown: 0x3a1e0c,
 };
 
 /**
@@ -40,7 +40,7 @@ const COZY_PALETTE = {
  */
 export function buildSpaceship() {
   const ship = new THREE.Group();
-  ship.name = 'spaceship';
+  ship.name = "spaceship";
   ship.scale.setScalar(0.24);
 
   const exterior = buildCozyExterior();
@@ -57,7 +57,7 @@ export function buildSpaceship() {
     color: COZY_PALETTE.glowAmberWarm,
     transparent: true,
     opacity: 0.85,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
   const plumeGeom = new THREE.ConeGeometry(0.1, 0.65, 16);
   plumeGeom.rotateX(-Math.PI / 2);
@@ -74,7 +74,7 @@ export function buildSpaceship() {
     color: COZY_PALETTE.glowCyan,
     transparent: true,
     opacity: 0.85,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
   const retroPlumeGeom = new THREE.ConeGeometry(0.06, 0.35, 12);
   retroPlumeGeom.rotateX(Math.PI / 2);
@@ -98,27 +98,27 @@ export function buildSpaceship() {
     dustPositions[i * 3 + 2] = -0.2 - Math.random() * 3.2;
   }
   const dustGeom = new THREE.BufferGeometry();
-  dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+  dustGeom.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
   const dustMat = new THREE.PointsMaterial({
     color: 0xffeedd,
     size: 0.045,
     transparent: true,
     opacity: 0.75,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
   const dustParticles = new THREE.Points(dustGeom, dustMat);
-  dustParticles.name = 'speed-dust';
+  dustParticles.name = "speed-dust";
   ship.add(dustParticles);
 
   ship.add(exterior, cockpitInterior, thrusterGlow);
 
-  const flightStick = cockpitInterior.getObjectByName('flight-stick');
-  const holoGlobe = cockpitInterior.getObjectByName('holo-globe');
-  const horizonNeedle = cockpitInterior.getObjectByName('horizon-needle');
-  const speedNeedle = cockpitInterior.getObjectByName('speed-needle');
-  const steamPuffs = cockpitInterior.getObjectByName('coffee-steam')?.children ?? [];
-  const exteriorCanopy = exterior.getObjectByName('exterior-canopy');
-  const exteriorPortholes = exterior.getObjectByName('exterior-portholes');
+  const flightStick = cockpitInterior.getObjectByName("flight-stick");
+  const holoGlobe = cockpitInterior.getObjectByName("holo-globe");
+  const horizonNeedle = cockpitInterior.getObjectByName("horizon-needle");
+  const speedNeedle = cockpitInterior.getObjectByName("speed-needle");
+  const steamPuffs = cockpitInterior.getObjectByName("coffee-steam")?.children ?? [];
+  const exteriorCanopy = exterior.getObjectByName("exterior-canopy");
+  const exteriorPortholes = exterior.getObjectByName("exterior-portholes");
 
   /**
    * Updates dynamic animations & camera mode visibility each tick.
@@ -168,9 +168,10 @@ export function buildSpaceship() {
     }
 
     // Cosmic star-dust particles motion (streams past when flying forward/backward)
-    const thrustDirection = (input?.thrust ?? 0);
+    const thrustDirection = input?.thrust ?? 0;
     const flightSpeed = Math.max(speedFraction, Math.abs(thrustDirection));
-    const dustSpeed = (thrustDirection !== 0 ? thrustDirection : (speedFraction > 0.05 ? 1 : 0.05)) * (flightSpeed * 8 + 0.5) * dt;
+    const dustSpeed =
+      (thrustDirection !== 0 ? thrustDirection : speedFraction > 0.05 ? 1 : 0.05) * (flightSpeed * 8 + 0.5) * dt;
 
     const posAttr = dustGeom.attributes.position;
     const array = posAttr.array;
@@ -220,29 +221,29 @@ export function buildSpaceship() {
     thrusterPlumes,
     flightStick,
     holoGlobe,
-    update
+    update,
   };
 }
 
 /** Builds the compact, cute, cozy exploration pod exterior. */
 function buildCozyExterior() {
   const group = new THREE.Group();
-  group.name = 'ship-exterior';
+  group.name = "ship-exterior";
 
   const creamMat = new THREE.MeshStandardMaterial({
     color: COZY_PALETTE.porcelainCream,
     metalness: 0.15,
-    roughness: 0.45
+    roughness: 0.45,
   });
   const terracottaMat = new THREE.MeshStandardMaterial({
     color: COZY_PALETTE.terracotta,
     metalness: 0.2,
-    roughness: 0.5
+    roughness: 0.5,
   });
   const bronzeMat = new THREE.MeshStandardMaterial({
     color: COZY_PALETTE.darkBronze,
     metalness: 0.6,
-    roughness: 0.35
+    roughness: 0.35,
   });
 
   // 1. Cozy Rounded Main Cabin Pod (soft organic shape)
@@ -270,31 +271,35 @@ function buildCozyExterior() {
     metalness: 0.1,
     transmission: 0.65,
     thickness: 0.2,
-    reflectivity: 0.85
+    reflectivity: 0.85,
   });
   const canopyGeom = new THREE.SphereGeometry(0.38, 20, 16, 0, Math.PI * 2, 0, Math.PI / 1.8);
   const canopy = new THREE.Mesh(canopyGeom, canopyMat);
-  canopy.name = 'exterior-canopy';
+  canopy.name = "exterior-canopy";
   canopy.position.set(0, 0.12, -0.18);
   canopy.scale.set(0.9, 0.75, 1.15);
   canopy.rotation.x = Math.PI;
 
   // 4. Glowing Porthole Windows on Left & Right Sides (warm amber cozy windows)
   const portholesGroup = new THREE.Group();
-  portholesGroup.name = 'exterior-portholes';
+  portholesGroup.name = "exterior-portholes";
 
   const portholeMat = new THREE.MeshBasicMaterial({ color: COZY_PALETTE.glowAmberWarm });
-  const portholeRingMat = new THREE.MeshStandardMaterial({ color: COZY_PALETTE.vintageBrass, metalness: 0.7, roughness: 0.3 });
+  const portholeRingMat = new THREE.MeshStandardMaterial({
+    color: COZY_PALETTE.vintageBrass,
+    metalness: 0.7,
+    roughness: 0.3,
+  });
 
   for (const side of [-1, 1]) {
     for (let i = 0; i < 2; i++) {
       const pRing = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.012, 8, 16), portholeRingMat);
       pRing.position.set(side * 0.44, 0.02, 0.1 + i * 0.28);
-      pRing.rotation.y = side * Math.PI / 2;
+      pRing.rotation.y = (side * Math.PI) / 2;
 
       const pGlass = new THREE.Mesh(new THREE.CircleGeometry(0.055, 16), portholeMat);
       pGlass.position.set(side * 0.441, 0.02, 0.1 + i * 0.28);
-      pGlass.rotation.y = side * Math.PI / 2;
+      pGlass.rotation.y = (side * Math.PI) / 2;
 
       portholesGroup.add(pRing, pGlass);
     }
@@ -308,7 +313,14 @@ function buildCozyExterior() {
   wingShape.lineTo(-0.15, 0.55);
   wingShape.lineTo(0, 0.45);
 
-  const wingExtrude = { depth: 0.03, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.015, bevelThickness: 0.015 };
+  const wingExtrude = {
+    depth: 0.03,
+    bevelEnabled: true,
+    bevelSegments: 2,
+    steps: 1,
+    bevelSize: 0.015,
+    bevelThickness: 0.015,
+  };
   const wingGeom = new THREE.ExtrudeGeometry(wingShape, wingExtrude);
   wingGeom.rotateX(Math.PI / 2);
 
@@ -368,17 +380,17 @@ function buildCozyExterior() {
 /** Builds the cozy 3D cabin interior: warm wood dash, vintage lamp, coffee mug, dials, and star globe. */
 function buildCozyCockpitInterior() {
   const group = new THREE.Group();
-  group.name = 'cockpit-interior';
+  group.name = "cockpit-interior";
 
   const woodMat = new THREE.MeshStandardMaterial({
     color: COZY_PALETTE.warmWood,
     roughness: 0.7,
-    metalness: 0.1
+    metalness: 0.1,
   });
   const brassMat = new THREE.MeshStandardMaterial({
     color: COZY_PALETTE.vintageBrass,
     metalness: 0.8,
-    roughness: 0.25
+    roughness: 0.25,
   });
   const dialBgMat = new THREE.MeshBasicMaterial({ color: 0x14100c });
 
@@ -408,7 +420,7 @@ function buildCozyCockpitInterior() {
     new THREE.PlaneGeometry(0.12, 0.006),
     new THREE.MeshBasicMaterial({ color: COZY_PALETTE.glowAmberWarm })
   );
-  horizonNeedle.name = 'horizon-needle';
+  horizonNeedle.name = "horizon-needle";
   horizonNeedle.position.set(0, 0, 0.002);
   centralDial.add(horizonNeedle);
 
@@ -416,7 +428,7 @@ function buildCozyCockpitInterior() {
     new THREE.PlaneGeometry(0.055, 0.005),
     new THREE.MeshBasicMaterial({ color: 0xff5555 })
   );
-  speedNeedle.name = 'speed-needle';
+  speedNeedle.name = "speed-needle";
   speedNeedle.position.set(0, 0, 0.004);
   centralDial.add(speedNeedle);
 
@@ -441,12 +453,17 @@ function buildCozyCockpitInterior() {
   rightDisplay.add(new THREE.Mesh(new THREE.RingGeometry(0.052, 0.058, 16), brassMat));
 
   const holoGlobe = new THREE.Group();
-  holoGlobe.name = 'holo-globe';
+  holoGlobe.name = "holo-globe";
   holoGlobe.position.set(0.22, 0.04, -0.08);
 
   const globeMesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.035, 10, 8),
-    new THREE.MeshBasicMaterial({ color: COZY_PALETTE.glowAmberWarm, wireframe: true, transparent: true, opacity: 0.85 })
+    new THREE.MeshBasicMaterial({
+      color: COZY_PALETTE.glowAmberWarm,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.85,
+    })
   );
   const globeRing = new THREE.Mesh(
     new THREE.RingGeometry(0.046, 0.052, 16),
@@ -496,7 +513,7 @@ function buildCozyCockpitInterior() {
 
   // Coffee steam vapor puffs
   const steamGroup = new THREE.Group();
-  steamGroup.name = 'coffee-steam';
+  steamGroup.name = "coffee-steam";
   for (let i = 0; i < 5; i++) {
     const steamMat = new THREE.MeshBasicMaterial({ color: 0xffeedd, transparent: true, opacity: 0.35 });
     const puff = new THREE.Mesh(new THREE.SphereGeometry(0.009, 6, 6), steamMat);
@@ -508,7 +525,7 @@ function buildCozyCockpitInterior() {
 
   // 8. Tactile Flight Control Stick
   const flightStick = new THREE.Group();
-  flightStick.name = 'flight-stick';
+  flightStick.name = "flight-stick";
   flightStick.position.set(0, -0.16, 0.06);
 
   const stickBase = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.045, 0.03, 10), brassMat);
@@ -558,7 +575,7 @@ function buildCozyCockpitInterior() {
 /** Builds the cute seated pilot figure. */
 function buildCozyPilot() {
   const group = new THREE.Group();
-  group.name = 'pilot';
+  group.name = "pilot";
 
   const skin = new THREE.MeshStandardMaterial({ color: 0xdfb496, roughness: 0.7 });
   const sweater = new THREE.MeshStandardMaterial({ color: 0x6e4d3b, roughness: 0.85 });

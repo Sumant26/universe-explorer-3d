@@ -2,6 +2,9 @@ import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
 
 export default [
+  {
+    ignores: ["dist/**", "node_modules/**", "coverage/**"],
+  },
   js.configs.recommended,
   prettier,
   {
@@ -20,7 +23,13 @@ export default [
         cancelAnimationFrame: "readonly",
         AudioContext: "readonly",
         webkitAudioContext: "readonly",
+        HTMLInputElement: "readonly",
+        HTMLTextAreaElement: "readonly",
+        HTMLElement: "readonly",
         HTMLCanvasElement: "readonly",
+        Event: "readonly",
+        KeyboardEvent: "readonly",
+        MouseEvent: "readonly",
         ImageData: "readonly",
         localStorage: "readonly",
         navigator: "readonly",
@@ -52,8 +61,8 @@ export default [
     },
   },
   {
-    // Architectural Boundary Rule: Core logic must remain 100% pure (no Three.js or DOM imports)
-    files: ["src/core/**/*.js"],
+    // Architectural Boundary Rule: Physics math logic must remain 100% pure (no Three.js or DOM imports)
+    files: ["src/physics/**/*.js"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -62,7 +71,7 @@ export default [
             {
               group: ["three", "three/*", "*/render/*", "*/audio/*", "*/input/*"],
               message:
-                "Architectural boundary violation: src/core/ must remain pure logic with zero Three.js, rendering, or audio dependencies.",
+                "Architectural boundary violation: src/physics/ must remain pure logic with zero Three.js, rendering, or audio dependencies.",
             },
           ],
         },

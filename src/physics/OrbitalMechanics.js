@@ -23,7 +23,7 @@ export function computeOrbitPosition({
   periodSeconds,
   timeSeconds,
   phaseOffset = 0,
-  inclinationDeg = 0
+  inclinationDeg = 0,
 }) {
   const a = safe(semiMajorAxis, 0);
   const e = clamp(safe(eccentricity, 0), 0, 0.95);

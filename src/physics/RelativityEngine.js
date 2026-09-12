@@ -70,14 +70,14 @@ export function computeTravelBreakdown(distanceKm) {
   const chemicalSeconds = travelTimeSeconds(safeDistance, 40000 / 3600); // 40,000 km/h -> km/s
 
   return {
-    lightSpeed: { seconds: lightSeconds, label: 'At light speed (c)' },
+    lightSpeed: { seconds: lightSeconds, label: "At light speed (c)" },
     relativistic999c: {
       seconds: relSeconds,
       shipSeconds: relShipSeconds,
-      label: 'Relativistic cruiser (0.999c)'
+      label: "Relativistic cruiser (0.999c)",
     },
-    fusionDrive01c: { seconds: fusionSeconds, label: 'Fusion drive (0.1c)' },
-    chemicalRocket: { seconds: chemicalSeconds, label: 'Chemical rocket (~40,000 km/h)' }
+    fusionDrive01c: { seconds: fusionSeconds, label: "Fusion drive (0.1c)" },
+    chemicalRocket: { seconds: chemicalSeconds, label: "Chemical rocket (~40,000 km/h)" },
   };
 }
 
@@ -88,8 +88,8 @@ export function computeTravelBreakdown(distanceKm) {
  * @returns {string}
  */
 export function formatDuration(seconds) {
-  if (!Number.isFinite(seconds)) return 'effectively forever';
-  if (seconds < 0) return '0 seconds';
+  if (!Number.isFinite(seconds)) return "effectively forever";
+  if (seconds < 0) return "0 seconds";
 
   const YEAR = 365.25 * 24 * 3600;
   if (seconds < 60) return `${seconds.toFixed(1)} sec`;

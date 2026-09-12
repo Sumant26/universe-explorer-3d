@@ -7,16 +7,15 @@
  * tracked by the caller via Engine#track).
  */
 
-import * as THREE from 'three';
-import { makeProceduralFallbackTexture } from '../core/AssetLoader.js';
-import { createAtmosphereMaterial } from './shaders/AtmosphereShader.js';
-import { createStarCoronaMaterial } from './shaders/StarCoronaShader.js';
-import { createEventHorizonMaterial, createAccretionDiskMaterial } from './shaders/BlackHoleShader.js';
+import * as THREE from "three";
+import { createAtmosphereMaterial } from "./shaders/AtmosphereShader.js";
+import { createStarCoronaMaterial } from "./shaders/StarCoronaShader.js";
+import { createEventHorizonMaterial, createAccretionDiskMaterial } from "./shaders/BlackHoleShader.js";
 import {
   createCelestialTexture,
   createEarthCloudTexture,
-  createSaturnRingTexture
-} from './PlanetProceduralTextures.js';
+  createSaturnRingTexture,
+} from "./PlanetProceduralTextures.js";
 
 const SEGMENTS = 48;
 
@@ -28,33 +27,35 @@ export function buildCelestialObject(body) {
   const group = new THREE.Group();
   group.name = `celestial:${body.id}`;
   group.userData.bodyId = body.id;
-  group.userData.kind = 'celestial';
+  group.userData.kind = "celestial";
 
   const radius = visualRadius(body);
-  const isSolidBody = ['star', 'planet', 'dwarfPlanet', 'moon', 'blackHole'].includes(body.type);
+  const isSolidBody = ["star", "planet", "dwarfPlanet", "moon", "blackHole"].includes(body.type);
   const safeRadius = isSolidBody
-    ? (body.type === 'star' ? Math.max(radius * 1.4, 0.7) : Math.max(radius * 1.25, 0.25))
+    ? body.type === "star"
+      ? Math.max(radius * 1.4, 0.7)
+      : Math.max(radius * 1.25, 0.25)
     : 0;
   group.userData.visualRadius = radius;
   group.userData.safeRadius = safeRadius;
 
   switch (body.type) {
-    case 'star':
+    case "star":
       group.add(buildStar(body));
       break;
-    case 'blackHole':
+    case "blackHole":
       group.add(buildBlackHole(body));
       break;
-    case 'nebula':
+    case "nebula":
       group.add(buildNebula(body));
       break;
-    case 'galaxy':
+    case "galaxy":
       group.add(buildGalaxy(body));
       break;
-    case 'structure':
+    case "structure":
       group.add(buildStructure(body));
       break;
-    case 'asteroidBelt':
+    case "asteroidBelt":
       group.add(buildAsteroidBelt(body));
       break;
     default:
@@ -78,7 +79,7 @@ function buildRockyBody(body) {
   const material = new THREE.MeshStandardMaterial({
     map: texture,
     roughness: body.environment.isGasGiant ? 0.85 : 0.7,
-    metalness: body.environment.isGasGiant ? 0.0 : 0.08
+    metalness: body.environment.isGasGiant ? 0.0 : 0.08,
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = `surface:${body.id}`;
@@ -87,14 +88,14 @@ function buildRockyBody(body) {
   group.add(mesh);
 
   // 1. Earth Atmosphere and Rotating Cloud Sphere
-  if (body.id === 'earth') {
+  if (body.id === "earth") {
     const cloudGeom = new THREE.SphereGeometry(radius * 1.025, SEGMENTS, SEGMENTS);
     const cloudMat = new THREE.MeshStandardMaterial({
       map: createEarthCloudTexture(512),
       transparent: true,
       opacity: 0.85,
       depthWrite: false,
-      roughness: 0.9
+      roughness: 0.9,
     });
     const cloudMesh = new THREE.Mesh(cloudGeom, cloudMat);
     cloudMesh.name = `clouds:${body.id}`;
@@ -102,7 +103,7 @@ function buildRockyBody(body) {
   }
 
   // 2. Saturn Iconic Multi-Ring System
-  if (body.id === 'saturn') {
+  if (body.id === "saturn") {
     const ringGeom = new THREE.RingGeometry(radius * 1.35, radius * 2.5, 64);
     ringGeom.rotateX(Math.PI / 2);
     const ringMat = new THREE.MeshStandardMaterial({
@@ -110,7 +111,7 @@ function buildRockyBody(body) {
       transparent: true,
       side: THREE.DoubleSide,
       roughness: 0.65,
-      metalness: 0.1
+      metalness: 0.1,
     });
     const ringMesh = new THREE.Mesh(ringGeom, ringMat);
     ringMesh.name = `rings:${body.id}`;
@@ -120,7 +121,7 @@ function buildRockyBody(body) {
   }
 
   // 3. Uranus Thin Vertical Rings
-  if (body.id === 'uranus') {
+  if (body.id === "uranus") {
     const uranusRingGeom = new THREE.RingGeometry(radius * 1.35, radius * 1.75, 48);
     uranusRingGeom.rotateX(Math.PI / 2);
     const uranusRingMat = new THREE.MeshStandardMaterial({
@@ -128,7 +129,7 @@ function buildRockyBody(body) {
       transparent: true,
       opacity: 0.4,
       side: THREE.DoubleSide,
-      roughness: 0.7
+      roughness: 0.7,
     });
     const uranusRing = new THREE.Mesh(uranusRingGeom, uranusRingMat);
     uranusRing.name = `rings:${body.id}`;
@@ -141,8 +142,8 @@ function buildRockyBody(body) {
   if (hasAtmosphere) {
     const atmosphereGeometry = new THREE.SphereGeometry(radius * 1.14, SEGMENTS, SEGMENTS);
     const atmosphereMaterial = createAtmosphereMaterial({
-      color: body.environment.hasLiquidWater ? 0x5da8ff : body.id === 'venus' ? 0xffdf99 : 0xe0b98f,
-      intensity: body.id === 'venus' ? 1.4 : 1.1
+      color: body.environment.hasLiquidWater ? 0x5da8ff : body.id === "venus" ? 0xffdf99 : 0xe0b98f,
+      intensity: body.id === "venus" ? 1.4 : 1.1,
     });
     const atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
     atmosphereMesh.name = `atmosphere:${body.id}`;
@@ -158,7 +159,7 @@ function buildStar(body) {
   const material = createStarCoronaMaterial({ color: body.colorHex });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = `star:${body.id}`;
-  mesh.userData.animatedUniforms = ['uTime'];
+  mesh.userData.animatedUniforms = ["uTime"];
 
   // Prominence flare outer halo
   const flareGeom = new THREE.SphereGeometry(radius * 1.22, 32, 32);
@@ -167,7 +168,7 @@ function buildStar(body) {
     transparent: true,
     opacity: 0.35,
     blending: THREE.AdditiveBlending,
-    side: THREE.BackSide
+    side: THREE.BackSide,
   });
   const flareMesh = new THREE.Mesh(flareGeom, flareMat);
   flareMesh.name = `flare:${body.id}`;
@@ -185,7 +186,7 @@ function buildBlackHole(body) {
   const horizonGeometry = new THREE.SphereGeometry(radius, SEGMENTS, SEGMENTS);
   const horizonMesh = new THREE.Mesh(horizonGeometry, createEventHorizonMaterial());
   horizonMesh.name = `horizon:${body.id}`;
-  horizonMesh.userData.animatedUniforms = ['uTime'];
+  horizonMesh.userData.animatedUniforms = ["uTime"];
 
   // Relativistic glowing photon sphere ring
   const photonGeom = new THREE.RingGeometry(radius * 1.02, radius * 1.12, 48);
@@ -194,7 +195,7 @@ function buildBlackHole(body) {
     transparent: true,
     opacity: 0.85,
     side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
   const photonMesh = new THREE.Mesh(photonGeom, photonMat);
   photonMesh.rotation.x = Math.PI / 2.3;
@@ -203,7 +204,7 @@ function buildBlackHole(body) {
   const diskMesh = new THREE.Mesh(diskGeometry, createAccretionDiskMaterial());
   diskMesh.name = `disk:${body.id}`;
   diskMesh.rotation.x = Math.PI / 2.3;
-  diskMesh.userData.animatedUniforms = ['uTime'];
+  diskMesh.userData.animatedUniforms = ["uTime"];
 
   const group = new THREE.Group();
   group.add(horizonMesh, photonMesh, diskMesh);
@@ -223,14 +224,14 @@ function buildNebula(body) {
     positions[i * 3 + 2] = r * Math.cos(phi);
   }
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   const material = new THREE.PointsMaterial({
     color: body.colorHex,
     size: 0.35,
     transparent: true,
     opacity: 0.55,
     blending: THREE.AdditiveBlending,
-    depthWrite: false
+    depthWrite: false,
   });
   const points = new THREE.Points(geometry, material);
   points.name = `nebula:${body.id}`;
@@ -261,15 +262,15 @@ function buildGalaxy(body) {
   }
 
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   const material = new THREE.PointsMaterial({
     size: 0.18,
     vertexColors: true,
     transparent: true,
     opacity: 0.9,
     blending: THREE.AdditiveBlending,
-    depthWrite: false
+    depthWrite: false,
   });
   const points = new THREE.Points(geometry, material);
   points.name = `galaxy:${body.id}`;
@@ -293,7 +294,7 @@ function buildStructure(body) {
     color: body.colorHex,
     wireframe: true,
     transparent: true,
-    opacity: 0.35
+    opacity: 0.35,
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = `structure:${body.id}`;
@@ -332,7 +333,7 @@ export function buildSatelliteMarker(satellite) {
   const group = new THREE.Group();
   group.name = `satellite:${satellite.id}`;
   group.userData.satelliteId = satellite.id;
-  group.userData.kind = 'satellite';
+  group.userData.kind = "satellite";
 
   const bodyGeometry = new THREE.BoxGeometry(0.06, 0.06, 0.12);
   const bodyMaterial = new THREE.MeshStandardMaterial({ color: satellite.colorHex, metalness: 0.6, roughness: 0.4 });
@@ -360,19 +361,9 @@ export function buildStarfield(count = 4000, spread = 400) {
     positions[i * 3 + 2] = (Math.random() - 0.5) * spread;
   }
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   const material = new THREE.PointsMaterial({ color: 0xfff6e6, size: 0.6, sizeAttenuation: true });
   const points = new THREE.Points(geometry, material);
-  points.name = 'background-starfield';
+  points.name = "background-starfield";
   return points;
-}
-
-function colorToHex(colorHex) {
-  return `#${new THREE.Color(colorHex).getHexString()}`;
-}
-
-function lighten(colorHex) {
-  const c = new THREE.Color(colorHex);
-  c.lerp(new THREE.Color(0xffffff), 0.35);
-  return `#${c.getHexString()}`;
 }

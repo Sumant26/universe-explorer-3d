@@ -6,18 +6,18 @@
  * kept separate from Three.js so the flight logic is unit-testable.
  */
 
-import { integrateManualFlight, computeBearing } from './FlightPhysics.js';
+import { integrateManualFlight, computeBearing } from "./FlightPhysics.js";
 
 const DEFAULT_KEY_MAP = {
-  thrustForward: ['KeyS', 'ArrowDown', 's', 'S', 'arrowdown'],
-  thrustBackward: ['KeyW', 'ArrowUp', 'w', 'W', 'arrowup'],
-  yawLeft: ['KeyA', 'ArrowLeft', 'a', 'A', 'arrowleft'],
-  yawRight: ['KeyD', 'ArrowRight', 'd', 'D', 'arrowright'],
-  strafeLeft: ['KeyQ', 'q', 'Q'],
-  strafeRight: ['KeyE', 'e', 'E'],
-  pitchUp: ['KeyR', 'r', 'R'],
-  pitchDown: ['KeyF', 'f', 'F'],
-  boost: ['ShiftLeft', 'ShiftRight', 'KeyB', 'b', 'B', 'shift']
+  thrustForward: ["KeyS", "ArrowDown", "s", "S", "arrowdown"],
+  thrustBackward: ["KeyW", "ArrowUp", "w", "W", "arrowup"],
+  yawLeft: ["KeyA", "ArrowLeft", "a", "A", "arrowleft"],
+  yawRight: ["KeyD", "ArrowRight", "d", "D", "arrowright"],
+  strafeLeft: ["KeyQ", "q", "Q"],
+  strafeRight: ["KeyE", "e", "E"],
+  pitchUp: ["KeyR", "r", "R"],
+  pitchDown: ["KeyF", "f", "F"],
+  boost: ["ShiftLeft", "ShiftRight", "KeyB", "b", "B", "shift"],
 };
 
 export class ManualNavigator {
@@ -58,7 +58,7 @@ export class ManualNavigator {
 
   /** Toggle hyperdrive lock from UI or shortcut */
   toggleHyperdriveLock(force) {
-    this._hyperdriveLocked = typeof force === 'boolean' ? force : !this._hyperdriveLocked;
+    this._hyperdriveLocked = typeof force === "boolean" ? force : !this._hyperdriveLocked;
     return this._hyperdriveLocked;
   }
 

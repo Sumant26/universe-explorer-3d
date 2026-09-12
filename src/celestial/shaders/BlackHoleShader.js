@@ -4,7 +4,7 @@
  * a soft dark sphere haloed by a warm swirling ring.
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 /** @returns {THREE.ShaderMaterial} for the event-horizon sphere. */
 export function createEventHorizonMaterial() {
@@ -24,7 +24,7 @@ export function createEventHorizonMaterial() {
         vec3 color = mix(vec3(0.0), vec3(0.15, 0.05, 0.25), rim);
         gl_FragColor = vec4(color, 1.0);
       }
-    `
+    `,
   });
 }
 
@@ -55,6 +55,6 @@ export function createAccretionDiskMaterial() {
     transparent: true,
     side: THREE.DoubleSide,
     depthWrite: false,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
 }

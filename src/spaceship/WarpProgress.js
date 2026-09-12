@@ -7,10 +7,10 @@
 
 /** @enum {string} */
 export const WarpPhase = Object.freeze({
-  SPOOLING: 'SPOOLING',
-  CRUISE: 'CRUISE',
-  DECELERATING: 'DECELERATING',
-  ARRIVED: 'ARRIVED'
+  SPOOLING: "SPOOLING",
+  CRUISE: "CRUISE",
+  DECELERATING: "DECELERATING",
+  ARRIVED: "ARRIVED",
 });
 
 const SPOOL_SECONDS = 1.4;
@@ -58,7 +58,7 @@ export function computeWarpProgress(elapsedSeconds, totalDurationSeconds) {
     phaseProgress,
     overallProgress: t / total,
     speedFraction,
-    pathT: clamp(pathT, 0, 1)
+    pathT: clamp(pathT, 0, 1),
   };
 }
 

@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig({
   server: { port: 3000, open: false },
-  build: { target: 'es2020', sourcemap: true },
+  build: { target: "es2020", sourcemap: true },
   test: {
-    environment: 'jsdom',
+    environment: "jsdom",
     globals: false,
-    include: ['tests/**/*.test.js']
-  }
+    include: ["tests/**/*.test.js"],
+  },
 });

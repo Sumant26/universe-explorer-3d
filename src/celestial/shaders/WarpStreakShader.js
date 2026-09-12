@@ -5,7 +5,7 @@
  * `uSpeedFraction` uniform (0 = stationary stars, 1 = full warp streak).
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 /**
  * @param {{ color?: THREE.Color|number }} [options]
@@ -15,7 +15,7 @@ export function createWarpStreakMaterial({ color = 0xdfe9ff } = {}) {
   return new THREE.ShaderMaterial({
     uniforms: {
       uColor: { value: new THREE.Color(color) },
-      uSpeedFraction: { value: 0 }
+      uSpeedFraction: { value: 0 },
     },
     vertexShader: /* glsl */ `
       uniform float uSpeedFraction;
@@ -39,6 +39,6 @@ export function createWarpStreakMaterial({ color = 0xdfe9ff } = {}) {
     `,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
   });
 }

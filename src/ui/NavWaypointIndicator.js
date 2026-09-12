@@ -1,7 +1,6 @@
-import * as THREE from 'three';
-import { store } from '../state/Store.js';
-import { getCelestialById } from '../celestial/CelestialData.js';
-import { CoordinateSystem } from '../physics/CoordinateSystem.js';
+import { store } from "../state/Store.js";
+import { getCelestialById } from "../celestial/CelestialData.js";
+import { CoordinateSystem } from "../physics/CoordinateSystem.js";
 
 /**
  * Navigation Waypoint Indicator
@@ -20,7 +19,7 @@ export class NavWaypointIndicator {
   }
 
   _bindStore() {
-    store.subscribe('selectedObjectId', (id) => {
+    store.subscribe("selectedObjectId", (id) => {
       this.currentTargetId = id;
       this.render();
     });
@@ -30,7 +29,7 @@ export class NavWaypointIndicator {
     if (!this.container) return;
 
     if (!this.currentTargetId) {
-      this.container.innerHTML = '';
+      this.container.innerHTML = "";
       return;
     }
 
@@ -66,13 +65,13 @@ export class NavWaypointIndicator {
       </div>
     `;
 
-    document.getElementById('btn-auto-align')?.addEventListener('click', () => {
+    document.getElementById("btn-auto-align")?.addEventListener("click", () => {
       if (this.onAlignClick && this.currentTargetId) {
         this.onAlignClick(this.currentTargetId);
       }
     });
 
-    document.getElementById('btn-auto-accel')?.addEventListener('click', () => {
+    document.getElementById("btn-auto-accel")?.addEventListener("click", () => {
       if (this.onAccelerateClick && this.currentTargetId) {
         this.onAccelerateClick(this.currentTargetId);
       }

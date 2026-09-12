@@ -20,7 +20,7 @@ export class SoundSynthesizer {
     if (this._ctx) return;
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) {
-      console.warn('[SoundSynthesizer] Web Audio API unavailable; running muted.');
+      console.warn("[SoundSynthesizer] Web Audio API unavailable; running muted.");
       this._available = false;
       return;
     }
@@ -30,7 +30,7 @@ export class SoundSynthesizer {
       this._buildAmbientDrone();
       this._buildEngineHum();
     } catch (err) {
-      console.warn('[SoundSynthesizer] Failed to initialize audio:', err);
+      console.warn("[SoundSynthesizer] Failed to initialize audio:", err);
       this._available = false;
     }
   }
@@ -43,10 +43,10 @@ export class SoundSynthesizer {
     gain.connect(ctx.destination);
 
     const osc1 = ctx.createOscillator();
-    osc1.type = 'sine';
+    osc1.type = "sine";
     osc1.frequency.value = 96;
     const osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
+    osc2.type = "sine";
     osc2.frequency.value = 96.6; // slight detune for a slow, calm beat
 
     osc1.connect(gain);
@@ -65,7 +65,7 @@ export class SoundSynthesizer {
     gain.connect(ctx.destination);
 
     const osc = ctx.createOscillator();
-    osc.type = 'triangle';
+    osc.type = "triangle";
     osc.frequency.value = 60;
     osc.connect(gain);
     osc.start();
@@ -91,7 +91,7 @@ export class SoundSynthesizer {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
+    osc.type = "sine";
     osc.frequency.setValueAtTime(660, now);
     osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
     gain.gain.setValueAtTime(0.001, now);

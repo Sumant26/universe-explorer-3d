@@ -16,18 +16,18 @@ A warm, calm, [slowroads.io](https://slowroads.io)-inspired little spaceship cab
 
 ## ⌨️ Controls
 
-| Key / Action | Description |
-| :--- | :--- |
-| Type in the search bar | Find any object or satellite; <kbd>↑</kbd>/<kbd>↓</kbd> to navigate results, <kbd>Enter</kbd> to select |
-| Mode toggle (next to search) | Switch between **Autopilot** and **Manual** flight |
-| <kbd>W</kbd>/<kbd>↑</kbd>, <kbd>S</kbd>/<kbd>↓</kbd> | Manual mode: thrust forward / back |
-| <kbd>A</kbd>/<kbd>←</kbd>, <kbd>D</kbd>/<kbd>→</kbd> | Manual mode: yaw left / right |
-| <kbd>R</kbd> / <kbd>F</kbd> | Manual mode: pitch up / down |
-| <kbd>Space</kbd> | Engage autopilot warp to the currently searched target |
-| <kbd>C</kbd> | Cycle camera view (Cockpit → 3rd-Person → Cinematic) |
-| <kbd>M</kbd> | Toggle audio mute |
-| <kbd>H</kbd> | Toggle HUD visibility |
-| <kbd>Esc</kbd> | Close detail / habitability / satellite panels |
+| Key / Action                                         | Description                                                                                             |
+| :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------ |
+| Type in the search bar                               | Find any object or satellite; <kbd>↑</kbd>/<kbd>↓</kbd> to navigate results, <kbd>Enter</kbd> to select |
+| Mode toggle (next to search)                         | Switch between **Autopilot** and **Manual** flight                                                      |
+| <kbd>W</kbd>/<kbd>↑</kbd>, <kbd>S</kbd>/<kbd>↓</kbd> | Manual mode: thrust forward / back                                                                      |
+| <kbd>A</kbd>/<kbd>←</kbd>, <kbd>D</kbd>/<kbd>→</kbd> | Manual mode: yaw left / right                                                                           |
+| <kbd>R</kbd> / <kbd>F</kbd>                          | Manual mode: pitch up / down                                                                            |
+| <kbd>Space</kbd>                                     | Engage autopilot warp to the currently searched target                                                  |
+| <kbd>C</kbd>                                         | Cycle camera view (Cockpit → 3rd-Person → Cinematic)                                                    |
+| <kbd>M</kbd>                                         | Toggle audio mute                                                                                       |
+| <kbd>H</kbd>                                         | Toggle HUD visibility                                                                                   |
+| <kbd>Esc</kbd>                                       | Close detail / habitability / satellite panels                                                          |
 
 ## 🛠️ Architecture
 
@@ -71,4 +71,5 @@ npm install
 npm run dev      # http://localhost:3000
 npm run build    # production build
 ```
+
 # universe-explorer-3d

@@ -78,7 +78,7 @@ export function sphericalToCartesian(raDeg, decDeg, distanceKm, kmPerUnit, scene
   return {
     x: r * Math.cos(dec) * Math.cos(ra),
     y: r * Math.sin(dec),
-    z: r * Math.cos(dec) * Math.sin(ra)
+    z: r * Math.cos(dec) * Math.sin(ra),
   };
 }
 
@@ -100,7 +100,7 @@ export function radToDeg(rad) {
  */
 export function formatDistance(distanceKm) {
   const km = safeNumber(distanceKm);
-  if (km < 0) return 'unknown';
+  if (km < 0) return "unknown";
   if (km < 5_000_000) return `${formatNumber(km)} km`;
   const au = kmToAu(km);
   if (au < 2000) return `${formatNumber(au)} AU`;
@@ -108,8 +108,8 @@ export function formatDistance(distanceKm) {
 }
 
 function formatNumber(n) {
-  if (!Number.isFinite(n)) return '—';
-  if (n >= 1000) return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  if (!Number.isFinite(n)) return "—";
+  if (n >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
   if (n >= 1) return n.toFixed(2);
   return n.toPrecision(2);
 }

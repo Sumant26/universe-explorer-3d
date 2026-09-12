@@ -12,7 +12,7 @@
  * habitability) still come from the real physical data in CelestialData.js.
  */
 
-import { computeOrbitPosition } from '../physics/OrbitalMechanics.js';
+import { computeOrbitPosition } from "../physics/OrbitalMechanics.js";
 
 const AU_SCENE_SCALE = 6; // scene units per AU^(1/3), keeps the solar system compact but readable
 const TIER_SHELL_RADIUS = { 0: 0, 1: 0, 2: 55, 3: 170, 4: 340 };
@@ -53,10 +53,10 @@ export function resolveScenePositions(bodies, timeSeconds = 0) {
         periodSeconds: Math.max(body.orbit.periodDays, 0.01) * DAY_SECONDS,
         timeSeconds,
         phaseOffset: hashToUnit(body.id) * Math.PI * 2,
-        inclinationDeg: body.orbit.inclinationDeg ?? 0
+        inclinationDeg: body.orbit.inclinationDeg ?? 0,
       });
       position = { x: parentPos.x + orbit.x, y: parentPos.y + orbit.y, z: parentPos.z + orbit.z };
-    } else if (body.id === 'sun') {
+    } else if (body.id === "sun") {
       position = { x: 0, y: 0, z: 0 };
     } else {
       position = shellPosition(body.id, TIER_SHELL_RADIUS[body.scaleTier] ?? 200);
@@ -80,7 +80,7 @@ export function resolveScenePositions(bodies, timeSeconds = 0) {
  */
 export function resolveSatellitePositions(satellites, celestialPositions) {
   const result = new Map();
-  const earthPos = celestialPositions.get('earth') ?? { x: 0, y: 0, z: 0 };
+  const earthPos = celestialPositions.get("earth") ?? { x: 0, y: 0, z: 0 };
 
   for (const sat of satellites) {
     if (sat.orbitsBodyId && celestialPositions.has(sat.orbitsBodyId)) {
@@ -95,7 +95,7 @@ export function resolveSatellitePositions(satellites, celestialPositions) {
       result.set(sat.id, {
         x: earthPos.x + (dir.x / len) * radius,
         y: earthPos.y + (dir.y / len) * radius,
-        z: earthPos.z + (dir.z / len) * radius
+        z: earthPos.z + (dir.z / len) * radius,
       });
     }
   }
@@ -104,14 +104,14 @@ export function resolveSatellitePositions(satellites, celestialPositions) {
 
 /** @private deterministic pseudo-random point on a sphere of the given radius. */
 function shellPosition(id, radius) {
-  const h1 = hashToUnit(id + 'θ');
-  const h2 = hashToUnit(id + 'φ');
+  const h1 = hashToUnit(id + "θ");
+  const h2 = hashToUnit(id + "φ");
   const theta = h1 * Math.PI * 2;
   const phi = Math.acos(2 * h2 - 1);
   return {
     x: radius * Math.sin(phi) * Math.cos(theta),
     y: radius * Math.cos(phi) * 0.4, // flatten slightly toward a galactic-plane feel
-    z: radius * Math.sin(phi) * Math.sin(theta)
+    z: radius * Math.sin(phi) * Math.sin(theta),
   };
 }
 

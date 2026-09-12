@@ -18,7 +18,7 @@
   --radius-md: 14px;
   --radius-sm: 8px;
   --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.35);
-  --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -29,7 +29,8 @@
   display: none !important;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -114,8 +115,15 @@ button {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(0.9); opacity: 0.7; }
-  50% { transform: scale(1.05); opacity: 1; }
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
 }
 
 .boot-bar {
@@ -200,6 +208,12 @@ button {
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

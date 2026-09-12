@@ -4,7 +4,7 @@
  * ship-time vs. Earth-time dilation readout during warp.
  */
 
-import { formatDuration } from '../physics/RelativityEngine.js';
+import { formatDuration } from "../physics/RelativityEngine.js";
 
 export class TelemetryHUD {
   /**
@@ -17,7 +17,7 @@ export class TelemetryHUD {
    * }} [handlers]
    */
   constructor(root, store, handlers = {}) {
-    if (!root) throw new Error('TelemetryHUD requires a root element');
+    if (!root) throw new Error("TelemetryHUD requires a root element");
     this.root = root;
     this.store = store;
     this._onToggleHyperdrive = handlers.onToggleHyperdrive ?? (() => {});
@@ -59,18 +59,18 @@ export class TelemetryHUD {
       shipTime: this.root.querySelector('[data-field="ship-time"]'),
       earthTime: this.root.querySelector('[data-field="earth-time"]'),
       driveStatus: this.root.querySelector('[data-field="drive-status"]'),
-      driveBadge: this.root.querySelector('.drive-status-badge')
+      driveBadge: this.root.querySelector(".drive-status-badge"),
     };
 
-    this._els.driveBadge?.addEventListener('click', () => {
+    this._els.driveBadge?.addEventListener("click", () => {
       this._onToggleHyperdrive();
     });
 
-    this.root.querySelector('[data-action="zoom-in"]')?.addEventListener('click', () => {
+    this.root.querySelector('[data-action="zoom-in"]')?.addEventListener("click", () => {
       this._onZoomIn();
     });
 
-    this.root.querySelector('[data-action="zoom-out"]')?.addEventListener('click', () => {
+    this.root.querySelector('[data-action="zoom-out"]')?.addEventListener("click", () => {
       this._onZoomOut();
     });
   }
@@ -81,15 +81,15 @@ export class TelemetryHUD {
    */
   updateDriveMode(isBoost) {
     if (!this._els.driveStatus || !this._els.driveBadge) return;
-    this._els.driveStatus.textContent = isBoost ? 'Hyperdrive' : 'Sublight';
-    this._els.driveBadge.classList.toggle('hyperdrive-active', Boolean(isBoost));
+    this._els.driveStatus.textContent = isBoost ? "Hyperdrive" : "Sublight";
+    this._els.driveBadge.classList.toggle("hyperdrive-active", Boolean(isBoost));
   }
 
   /** @private @param {object} telemetry */
   _update(telemetry) {
     if (!telemetry) return;
     this._els.speed.textContent = `${telemetry.currentSpeedC.toFixed(3)}c`;
-    this._els.eta.textContent = telemetry.etaSeconds > 0 ? formatDuration(telemetry.etaSeconds) : '—';
+    this._els.eta.textContent = telemetry.etaSeconds > 0 ? formatDuration(telemetry.etaSeconds) : "—";
     this._els.shipTime.textContent = formatDuration(telemetry.timeDilationShipSec);
     this._els.earthTime.textContent = formatDuration(telemetry.timeDilationEarthSec);
   }

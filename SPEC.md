@@ -1,6 +1,7 @@
 # 🌌 Cosmos Warp Explorer - Project Specification & Architecture (SPEC)
 
 ## 1. Project Overview & Objectives
+
 **Cosmos Warp Explorer** is an interactive, multi-scale 3D web application built with Three.js and Vite that renders the known universe from planetary scale up to the cosmic web, featuring an interactive first-person spaceship cockpit with relativistic warp travel simulation, real-time astrophysics calculations, habitability analysis, and comprehensive planetary data.
 
 ---
@@ -8,6 +9,7 @@
 ## 2. Architectural Principles & Code Standards
 
 ### 2.1 Code Quality & Best Practices
+
 - **Modularity**: Strict separation of concerns across rendering, physics/math, state management, audio, and UI overlays.
 - **Single Responsibility Principle (SRP)**: Each class/module handles a distinct domain (e.g., `CelestialBody`, `WarpController`, `AtmosphereShader`, `AudioManager`).
 - **Memory & GPU Lifecycle Management**:
@@ -17,6 +19,7 @@
 - **Performance Budget**: Target constant **60+ FPS** on standard GPUs. Use instancing for large particle systems (asteroid belts, cosmic web, starfields) and LOD (Level of Detail) scaling.
 
 ### 2.2 Project Directory Structure
+
 ```
 universe-explorer-3d/
 ├── .agents/
@@ -86,35 +89,37 @@ universe-explorer-3d/
 ## 3. Centralized State Management System
 
 ### 3.1 State Pattern: Reactive Unidirectional Store
+
 The application uses an observable state store (`Store.js`) with immutable updates and typed actions to ensure predictable state transitions.
 
 ```javascript
 // Example State Schema
 const InitialState = {
-  currentScale: 0,                 // 0: Planetary, 1: Solar, 2: Stellar, 3: Galactic, 4: Universe
-  cameraMode: 'COCKPIT',           // 'COCKPIT' | 'ORBIT' | 'CINEMATIC'
-  selectedObject: 'earth',         // ID of currently focused celestial body
-  targetObject: null,              // ID of travel destination
-  flightStatus: 'IDLE',            // 'IDLE' | 'SPOOLING' | 'WARP' | 'DECELERATING' | 'ORBITING'
+  currentScale: 0, // 0: Planetary, 1: Solar, 2: Stellar, 3: Galactic, 4: Universe
+  cameraMode: "COCKPIT", // 'COCKPIT' | 'ORBIT' | 'CINEMATIC'
+  selectedObject: "earth", // ID of currently focused celestial body
+  targetObject: null, // ID of travel destination
+  flightStatus: "IDLE", // 'IDLE' | 'SPOOLING' | 'WARP' | 'DECELERATING' | 'ORBITING'
   flightTelemetry: {
-    currentSpeedC: 0.0,            // Speed in fractions of c (0.0 to 99.999c)
-    lorentzFactor: 1.0,            // Gamma factor
+    currentSpeedC: 0.0, // Speed in fractions of c (0.0 to 99.999c)
+    lorentzFactor: 1.0, // Gamma factor
     distanceRemainingKm: 0,
     timeDilationShipSec: 0,
     timeDilationEarthSec: 0,
-    etaSeconds: 0
+    etaSeconds: 0,
   },
   ui: {
     isDetailPanelOpen: false,
     isHabitabilityOpen: false,
-    searchQuery: '',
+    searchQuery: "",
     audioMuted: false,
-    hudVisible: true
-  }
+    hudVisible: true,
+  },
 };
 ```
 
 ### 3.2 State Rules
+
 1. **No Direct Mutation**: State can only be modified through dispatched actions (`dispatch(ActionTypes.SET_TARGET, payload)`).
 2. **Subscribers / Observers**: UI components, audio generators, and rendering loops subscribe only to their relevant state slices.
 3. **History / Telemetry Tracking**: All warp jumps and destination selections are logged for navigation history and replay.
@@ -124,15 +129,17 @@ const InitialState = {
 ## 4. Feature Specifications
 
 ### 4.1 Multi-Scale Universe Hierarchy
-| Scale Tier | Typical Objects | Visual Implementation |
-| :--- | :--- | :--- |
-| **0. Planetary** | Earth, Moon, Mars, Jupiter, Saturn | Textured sphere + Normal/Specular maps + Rayleigh Atmosphere shader |
-| **1. Solar System** | Sun, Asteroid Belt, Kuiper Belt, Planets | Keplerian orbit lines + instanced particle belt meshes + Solar flare shader |
-| **2. Stellar / Deep Space**| Alpha Centauri, Betelgeuse, Sirius, Nebulae, Black Holes | Procedural corona shaders + Volumetric particle clouds + Gravitational lensing |
-| **3. Galactic** | Milky Way, Sagittarius A*, Star Clusters | 200,000+ instanced spiral arm particles + galactic core glow |
-| **4. Extragalactic / Universe**| Andromeda, Local Supercluster, Cosmic Web, CMB | Cosmic filament shader + Observable Universe boundary sphere |
+
+| Scale Tier                      | Typical Objects                                          | Visual Implementation                                                          |
+| :------------------------------ | :------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| **0. Planetary**                | Earth, Moon, Mars, Jupiter, Saturn                       | Textured sphere + Normal/Specular maps + Rayleigh Atmosphere shader            |
+| **1. Solar System**             | Sun, Asteroid Belt, Kuiper Belt, Planets                 | Keplerian orbit lines + instanced particle belt meshes + Solar flare shader    |
+| **2. Stellar / Deep Space**     | Alpha Centauri, Betelgeuse, Sirius, Nebulae, Black Holes | Procedural corona shaders + Volumetric particle clouds + Gravitational lensing |
+| **3. Galactic**                 | Milky Way, Sagittarius A*, Star Clusters                 | 200,000+ instanced spiral arm particles + galactic core glow                   |
+| **4. Extragalactic / Universe** | Andromeda, Local Supercluster, Cosmic Web, CMB           | Cosmic filament shader + Observable Universe boundary sphere                   |
 
 ### 4.2 Relativistic Flight & Warp Simulation
+
 - **Warp Sequence**:
   1. User selects target $\rightarrow$ `flightStatus = 'SPOOLING'`.
   2. Cockpit locks target vector; HUD displays lock vector and calculated distance.
@@ -144,6 +151,7 @@ const InitialState = {
   6. Arrival & deceleration $\rightarrow$ Smooth exponential drop out of warp into destination orbit.
 
 ### 4.3 Astronomical Data & Habitability Engine
+
 - **Metrics Calculated**:
   - Distance from Earth: Calculated live via 3D vector coordinates and calibrated astronomical lookup ($\text{km}$, $\text{AU}$, $\text{Light-Years}$).
   - Travel Time:
@@ -154,18 +162,20 @@ const InitialState = {
   - Atmosphere Composition: Bar breakdown ($N_2, O_2, CO_2, CH_4$, Noble Gases, Toxic Elements).
   - Habitability & Occupation Assessment:
     - **Score (0–100%)** based on atmospheric pressure, temperature envelope, gravity, radiation, and water presence.
-    - **Occupation Feasibility Report**: Colonization classification (e.g. *Directly Habitable*, *Dome Required*, *Subterranean/Radiation Shielded*, *Extreme Terraforming Required*, *Gas Giant Outpost*).
+    - **Occupation Feasibility Report**: Colonization classification (e.g. _Directly Habitable_, _Dome Required_, _Subterranean/Radiation Shielded_, _Extreme Terraforming Required_, _Gas Giant Outpost_).
 
 ---
 
 ## 5. Testing & Quality Assurance Standard
 
 ### 5.1 Test Coverage Requirements
+
 - **100% Core Math & Physics Coverage**: Every mathematical formula (relativity, coordinate transformation, distance formulas, habitability scoring) must have automated unit tests.
 - **State Store Coverage**: All state transitions, actions, and subscription callbacks must be tested with edge cases.
 - **Data Integrity Tests**: Celestial database must be validated for required fields, valid numerical bounds, and proper asset references.
 
 ### 5.2 Test Framework
+
 - **Vitest**: Fast, modern test runner integrated with Vite.
 - Test commands configured in `package.json`:
   - `npm run test` (single pass test suite)
@@ -191,6 +201,7 @@ const InitialState = {
 ## 7. Living Documentation Protocol (README & Test Maintenance)
 
 ### Mandatory Maintenance Rules:
+
 1. **Synchronized Documentation**: Whenever a new feature, component, or celestial body is added, the `README.md` MUST be immediately updated with:
    - Feature summary & usage instructions
    - Updated screenshot/diagram or telemetry guide

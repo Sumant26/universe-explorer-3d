@@ -11,13 +11,13 @@
  *    every transition unit-testable without touching Three.js or the DOM.
  */
 
-import { ActionTypes, FlightStatus, FlightMode, CameraMode } from './StateActions.js';
+import { ActionTypes, FlightStatus, FlightMode, CameraMode } from "./StateActions.js";
 
 /** @returns {object} A fresh copy of the initial application state. */
 export function createInitialState() {
   return {
     currentScale: 0,
-    selectedObject: 'earth',
+    selectedObject: "earth",
     targetObject: null,
     flightStatus: FlightStatus.IDLE,
     flightMode: FlightMode.MANUAL,
@@ -30,18 +30,18 @@ export function createInitialState() {
       timeDilationShipSec: 0,
       timeDilationEarthSec: 0,
       etaSeconds: 0,
-      headingDeg: 0
+      headingDeg: 0,
     },
     history: [],
     ui: {
       isDetailPanelOpen: false,
       isHabitabilityOpen: false,
       isSatelliteListOpen: false,
-      searchQuery: '',
+      searchQuery: "",
       audioMuted: false,
-      hudVisible: true
+      hudVisible: true,
     },
-    lastError: null
+    lastError: null,
   };
 }
 
@@ -64,7 +64,7 @@ export function reducer(state, action) {
       return {
         ...state,
         targetObject: action.payload,
-        flightStatus: FlightStatus.SPOOLING
+        flightStatus: FlightStatus.SPOOLING,
       };
 
     case ActionTypes.CLEAR_TARGET:
@@ -72,7 +72,7 @@ export function reducer(state, action) {
         ...state,
         targetObject: null,
         flightStatus: FlightStatus.IDLE,
-        flightTelemetry: { ...state.flightTelemetry, currentSpeedC: 0, etaSeconds: 0 }
+        flightTelemetry: { ...state.flightTelemetry, currentSpeedC: 0, etaSeconds: 0 },
       };
 
     case ActionTypes.SET_FLIGHT_STATUS:
@@ -95,8 +95,8 @@ export function reducer(state, action) {
         ...state,
         ui: {
           ...state.ui,
-          isDetailPanelOpen: action.payload ?? !state.ui.isDetailPanelOpen
-        }
+          isDetailPanelOpen: action.payload ?? !state.ui.isDetailPanelOpen,
+        },
       };
 
     case ActionTypes.TOGGLE_HABITABILITY:
@@ -104,8 +104,8 @@ export function reducer(state, action) {
         ...state,
         ui: {
           ...state.ui,
-          isHabitabilityOpen: action.payload ?? !state.ui.isHabitabilityOpen
-        }
+          isHabitabilityOpen: action.payload ?? !state.ui.isHabitabilityOpen,
+        },
       };
 
     case ActionTypes.TOGGLE_SATELLITE_LIST:
@@ -113,8 +113,8 @@ export function reducer(state, action) {
         ...state,
         ui: {
           ...state.ui,
-          isSatelliteListOpen: action.payload ?? !state.ui.isSatelliteListOpen
-        }
+          isSatelliteListOpen: action.payload ?? !state.ui.isSatelliteListOpen,
+        },
       };
 
     case ActionTypes.TOGGLE_AUDIO_MUTED:
@@ -156,8 +156,8 @@ export class Store {
    * @returns {object} the resulting next state
    */
   dispatch(action) {
-    if (!action || typeof action.type !== 'string') {
-      throw new TypeError('dispatch() requires an action object with a string `type`');
+    if (!action || typeof action.type !== "string") {
+      throw new TypeError("dispatch() requires an action object with a string `type`");
     }
     const prevState = this._state;
     let nextState;
@@ -168,7 +168,7 @@ export class Store {
       // application state instead so the UI can show a friendly message.
       nextState = reducer(prevState, {
         type: ActionTypes.REPORT_ERROR,
-        payload: err
+        payload: err,
       });
     }
     this._state = nextState;
@@ -185,7 +185,7 @@ export class Store {
    * @returns {Function} unsubscribe function
    */
   subscribe(cb, selector = (s) => s) {
-    if (typeof cb !== 'function') throw new TypeError('subscribe() requires a callback function');
+    if (typeof cb !== "function") throw new TypeError("subscribe() requires a callback function");
     const entry = { selector, cb, lastValue: selector(this._state) };
     this._subscribers.add(entry);
     return () => this._subscribers.delete(entry);
@@ -207,7 +207,7 @@ export class Store {
           entry.cb(nextValue, prevValue, action);
         } catch (err) {
           // One misbehaving subscriber must not prevent others from being notified.
-          console.error('[Store] subscriber callback threw:', err);
+          console.error("[Store] subscriber callback threw:", err);
         }
       }
     }

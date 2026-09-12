@@ -7,14 +7,13 @@
  * WarpProgress module so the sequence itself stays unit-testable.
  */
 
-import * as THREE from 'three';
-import { computeWarpProgress, chooseJumpDuration, WarpPhase } from './WarpProgress.js';
-import { buildStarfield } from '../celestial/CelestialFactory.js';
-import { createWarpStreakMaterial } from '../celestial/shaders/WarpStreakShader.js';
-import { lorentzFactor, properTime, SPEED_OF_LIGHT_KM_S } from '../physics/RelativityEngine.js';
-import { sceneUnitsToDistanceKm } from '../physics/CoordinateSystem.js';
-import { FlightStatus } from '../state/StateActions.js';
-import { Actions } from '../state/StateActions.js';
+import * as THREE from "three";
+import { computeWarpProgress, chooseJumpDuration, WarpPhase } from "./WarpProgress.js";
+import { createWarpStreakMaterial } from "../celestial/shaders/WarpStreakShader.js";
+import { lorentzFactor, properTime, SPEED_OF_LIGHT_KM_S } from "../physics/RelativityEngine.js";
+import { sceneUnitsToDistanceKm } from "../physics/CoordinateSystem.js";
+import { FlightStatus } from "../state/StateActions.js";
+import { Actions } from "../state/StateActions.js";
 
 export class WarpController {
   /**
@@ -49,10 +48,10 @@ export class WarpController {
       positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
       positions[i * 3 + 2] = -Math.random() * 60;
     }
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     const material = createWarpStreakMaterial({});
     const points = new THREE.Points(geometry, material);
-    points.name = 'warp-streaks';
+    points.name = "warp-streaks";
     points.frustumCulled = false;
     points.visible = false;
     return points;
@@ -148,9 +147,7 @@ export class WarpController {
       this.ship.userData.velocity = { x: 0, y: 0, z: 0 };
       this.ship.userData.bankAngle = 0;
       this.store.dispatch(Actions.setFlightStatus(FlightStatus.ARRIVED));
-      this.store.dispatch(
-        Actions.updateTelemetry({ currentSpeedC: 0, etaSeconds: 0, distanceRemainingKm: 0 })
-      );
+      this.store.dispatch(Actions.updateTelemetry({ currentSpeedC: 0, etaSeconds: 0, distanceRemainingKm: 0 }));
       this._onArrive?.();
     }
   }
@@ -170,7 +167,7 @@ export class WarpController {
         totalDistanceKm: this._distanceKm,
         timeDilationEarthSec: this._elapsed,
         timeDilationShipSec: properTime(this._elapsed, speedC),
-        etaSeconds: remainingDurationSeconds
+        etaSeconds: remainingDurationSeconds,
       })
     );
   }

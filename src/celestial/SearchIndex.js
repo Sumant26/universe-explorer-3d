@@ -5,8 +5,8 @@
  * tested directly.
  */
 
-import { CELESTIAL_BODIES, searchCelestialBodies } from './CelestialData.js';
-import { SATELLITES, searchSatellites } from './SatelliteData.js';
+import { CELESTIAL_BODIES, searchCelestialBodies } from "./CelestialData.js";
+import { searchSatellites } from "./SatelliteData.js";
 
 /**
  * @typedef {object} SearchResult
@@ -24,21 +24,21 @@ import { SATELLITES, searchSatellites } from './SatelliteData.js';
  * @returns {SearchResult[]}
  */
 export function searchUniverse(query, { maxResults = 8 } = {}) {
-  const q = String(query ?? '').trim();
+  const q = String(query ?? "").trim();
   if (!q) return [];
 
   const bodies = searchCelestialBodies(q, CELESTIAL_BODIES).map((b) => ({
     id: b.id,
     name: b.name,
-    kind: /** @type {const} */ ('celestial'),
-    subtitle: b.location
+    kind: /** @type {const} */ ("celestial"),
+    subtitle: b.location,
   }));
 
   const satellites = searchSatellites(q).map((s) => ({
     id: s.id,
     name: s.name,
-    kind: /** @type {const} */ ('satellite'),
-    subtitle: `${s.agency} · ${s.status}`
+    kind: /** @type {const} */ ("satellite"),
+    subtitle: `${s.agency} · ${s.status}`,
   }));
 
   return [...bodies, ...satellites].slice(0, Math.max(0, maxResults));

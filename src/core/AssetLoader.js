@@ -5,7 +5,7 @@
  * never breaks the visuals — it just looks slightly simpler.
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 const loader = new THREE.TextureLoader();
 
@@ -54,11 +54,11 @@ export function loadTextureWithFallback(url, timeoutMs = 8000) {
  * @param {{ baseColor?: string, accentColor?: string, size?: number }} [options]
  * @returns {THREE.CanvasTexture}
  */
-export function makeProceduralFallbackTexture({ baseColor = '#8f8fae', accentColor = '#c9c9e6', size = 256 } = {}) {
-  const canvas = document.createElement('canvas');
+export function makeProceduralFallbackTexture({ baseColor = "#8f8fae", accentColor = "#c9c9e6", size = 256 } = {}) {
+  const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
   ctx.fillStyle = baseColor;

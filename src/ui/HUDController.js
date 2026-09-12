@@ -5,7 +5,7 @@
  * own rendering; this just coordinates cross-cutting shortcuts.
  */
 
-import { Actions } from '../state/StateActions.js';
+import { Actions } from "../state/StateActions.js";
 
 /**
  * @param {object} deps
@@ -16,10 +16,10 @@ import { Actions } from '../state/StateActions.js';
  * @returns {() => void} teardown function
  */
 export function initHUDController({ store, viewSwitcher, audio, onEngageWarp }) {
-  const hudLayers = document.querySelectorAll('.hud-layer');
+  const hudLayers = document.querySelectorAll(".hud-layer");
 
   const applyHudVisibility = (visible) => {
-    hudLayers.forEach((el) => el.classList.toggle('hud-hidden', !visible));
+    hudLayers.forEach((el) => el.classList.toggle("hud-hidden", !visible));
   };
 
   const unsubscribeHud = store.subscribe(
@@ -37,26 +37,26 @@ export function initHUDController({ store, viewSwitcher, audio, onEngageWarp }) 
     // Don't hijack shortcuts while the user is typing in the search box.
     const isTyping = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
 
-    if (event.code === 'KeyC' && !isTyping) {
+    if (event.code === "KeyC" && !isTyping) {
       viewSwitcher.cycle();
-    } else if (event.code === 'KeyM' && !isTyping) {
+    } else if (event.code === "KeyM" && !isTyping) {
       store.dispatch(Actions.toggleAudioMuted());
-    } else if (event.code === 'KeyH' && !isTyping) {
+    } else if (event.code === "KeyH" && !isTyping) {
       store.dispatch(Actions.toggleHud());
-    } else if (event.code === 'Escape') {
+    } else if (event.code === "Escape") {
       store.dispatch(Actions.toggleDetailPanel(false));
       store.dispatch(Actions.toggleHabitability(false));
       store.dispatch(Actions.toggleSatelliteList(false));
-    } else if (event.code === 'Space' && !isTyping) {
+    } else if (event.code === "Space" && !isTyping) {
       event.preventDefault();
       onEngageWarp?.();
     }
   };
 
-  window.addEventListener('keydown', handleKeydown);
+  window.addEventListener("keydown", handleKeydown);
 
   return () => {
-    window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener("keydown", handleKeydown);
     unsubscribeHud();
     unsubscribeMute();
   };

@@ -5,7 +5,7 @@
  * knows about game state — it's a thin, reusable rendering shell.
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export class Engine {
   /**
@@ -15,7 +15,7 @@ export class Engine {
    * @param {() => void} [options.onContextRestored]
    */
   constructor({ canvas, onContextLost, onContextRestored }) {
-    if (!canvas) throw new Error('Engine requires a canvas element');
+    if (!canvas) throw new Error("Engine requires a canvas element");
     this.canvas = canvas;
     this._onContextLost = onContextLost ?? (() => {});
     this._onContextRestored = onContextRestored ?? (() => {});
@@ -31,7 +31,7 @@ export class Engine {
     this.camera.position.set(0, 1.4, 6);
 
     this._resizeHandler = () => this.resize();
-    window.addEventListener('resize', this._resizeHandler);
+    window.addEventListener("resize", this._resizeHandler);
 
     this._clock = new THREE.Clock();
     this._rafId = null;
@@ -40,13 +40,13 @@ export class Engine {
   /** @private @returns {THREE.WebGLRenderer} */
   _createRenderer(canvas) {
     if (!hasWebGLSupport()) {
-      throw new Error('WebGL is not available in this browser');
+      throw new Error("WebGL is not available in this browser");
     }
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      powerPreference: 'high-performance',
-      alpha: false
+      powerPreference: "high-performance",
+      alpha: false,
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(window.innerWidth, window.innerHeight, false);
@@ -54,12 +54,12 @@ export class Engine {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
 
-    canvas.addEventListener('webglcontextlost', (event) => {
+    canvas.addEventListener("webglcontextlost", (event) => {
       event.preventDefault();
       this.stop();
-      this._onContextLost('WebGL context was lost.');
+      this._onContextLost("WebGL context was lost.");
     });
-    canvas.addEventListener('webglcontextrestored', () => {
+    canvas.addEventListener("webglcontextrestored", () => {
       this._onContextRestored();
     });
 
@@ -117,7 +117,7 @@ export class Engine {
           cb(delta, elapsed);
         } catch (err) {
           // A single failing subsystem shouldn't blank the whole render loop.
-          console.error('[Engine] frame callback failed:', err);
+          console.error("[Engine] frame callback failed:", err);
         }
       }
       this.renderer.render(this.scene, this.camera);
@@ -137,7 +137,7 @@ export class Engine {
     if (this._disposed) return;
     this._disposed = true;
     this.stop();
-    window.removeEventListener('resize', this._resizeHandler);
+    window.removeEventListener("resize", this._resizeHandler);
 
     this.scene.traverse((obj) => {
       if (obj.geometry) obj.geometry.dispose?.();
@@ -163,10 +163,10 @@ function disposeMaterial(material) {
 /** @returns {boolean} whether a WebGL context can be created at all. */
 export function hasWebGLSupport() {
   try {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     return Boolean(
       window.WebGLRenderingContext &&
-        (canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+      (canvas.getContext("webgl2") || canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
     );
   } catch {
     return false;

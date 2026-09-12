@@ -5,10 +5,10 @@
  * rendering (no composer) if the post-processing modules fail to load.
  */
 
-import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 /**
  * @param {THREE.WebGLRenderer} renderer
@@ -38,15 +38,15 @@ export function createPostProcessing(renderer, scene, camera) {
       },
       dispose: () => {
         composer.passes.forEach((pass) => pass.dispose?.());
-      }
+      },
     };
   } catch (err) {
-    console.warn('[PostProcessing] Falling back to plain rendering:', err);
+    console.warn("[PostProcessing] Falling back to plain rendering:", err);
     return {
       composer: null,
       render: () => renderer.render(scene, camera),
       resize: () => {},
-      dispose: () => {}
+      dispose: () => {},
     };
   }
 }

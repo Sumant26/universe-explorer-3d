@@ -5,7 +5,7 @@
  * ensuring high fidelity, fast loading, and crisp visual aesthetics.
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 /** Pseudo-random noise helper based on coordinate hash */
 function hash2D(x, y) {
@@ -50,46 +50,46 @@ function fbm(x, y, octaves = 4) {
  * @returns {THREE.CanvasTexture}
  */
 export function createCelestialTexture(bodyId, size = 512) {
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
   switch (bodyId) {
-    case 'earth':
+    case "earth":
       drawEarthTexture(ctx, size);
       break;
-    case 'jupiter':
+    case "jupiter":
       drawJupiterTexture(ctx, size);
       break;
-    case 'saturn':
+    case "saturn":
       drawSaturnTexture(ctx, size);
       break;
-    case 'mars':
+    case "mars":
       drawMarsTexture(ctx, size);
       break;
-    case 'moon':
-    case 'phobos':
-    case 'ceres':
+    case "moon":
+    case "phobos":
+    case "ceres":
       drawMoonTexture(ctx, size);
       break;
-    case 'venus':
+    case "venus":
       drawVenusTexture(ctx, size);
       break;
-    case 'mercury':
+    case "mercury":
       drawMercuryTexture(ctx, size);
       break;
-    case 'europa':
+    case "europa":
       drawEuropaTexture(ctx, size);
       break;
-    case 'titan':
+    case "titan":
       drawTitanTexture(ctx, size);
       break;
-    case 'uranus':
+    case "uranus":
       drawUranusTexture(ctx, size);
       break;
-    case 'neptune':
+    case "neptune":
       drawNeptuneTexture(ctx, size);
       break;
     default:
@@ -108,10 +108,10 @@ export function createCelestialTexture(bodyId, size = 512) {
  * @returns {THREE.CanvasTexture}
  */
 export function createEarthCloudTexture(size = 512) {
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
   ctx.clearRect(0, 0, size, size);
@@ -133,7 +133,7 @@ export function createEarthCloudTexture(size = 512) {
       const cloudDensity = Math.max(0, (n - 0.46) * 2.8);
       const alpha = Math.min(Math.floor(cloudDensity * 220), 220);
 
-      data[idx] = 255;     // R
+      data[idx] = 255; // R
       data[idx + 1] = 255; // G
       data[idx + 2] = 255; // B
       data[idx + 3] = alpha; // A
@@ -152,37 +152,37 @@ export function createEarthCloudTexture(size = 512) {
  * @returns {THREE.CanvasTexture}
  */
 export function createSaturnRingTexture(size = 512) {
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = 16;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
   const gradient = ctx.createLinearGradient(0, 0, size, 0);
 
   // C Ring (inner, faint, translucent dusky brown)
-  gradient.addColorStop(0.00, 'rgba(140, 120, 95, 0.0)');
-  gradient.addColorStop(0.08, 'rgba(160, 135, 105, 0.35)');
-  gradient.addColorStop(0.22, 'rgba(180, 150, 115, 0.45)');
+  gradient.addColorStop(0.0, "rgba(140, 120, 95, 0.0)");
+  gradient.addColorStop(0.08, "rgba(160, 135, 105, 0.35)");
+  gradient.addColorStop(0.22, "rgba(180, 150, 115, 0.45)");
 
   // B Ring (brightest, dense golden-cream bands)
-  gradient.addColorStop(0.24, 'rgba(230, 205, 160, 0.95)');
-  gradient.addColorStop(0.38, 'rgba(245, 225, 185, 0.98)');
-  gradient.addColorStop(0.54, 'rgba(215, 190, 145, 0.90)');
+  gradient.addColorStop(0.24, "rgba(230, 205, 160, 0.95)");
+  gradient.addColorStop(0.38, "rgba(245, 225, 185, 0.98)");
+  gradient.addColorStop(0.54, "rgba(215, 190, 145, 0.90)");
 
   // Cassini Division (dark gap)
-  gradient.addColorStop(0.57, 'rgba(30, 25, 20, 0.05)');
-  gradient.addColorStop(0.63, 'rgba(40, 32, 25, 0.08)');
+  gradient.addColorStop(0.57, "rgba(30, 25, 20, 0.05)");
+  gradient.addColorStop(0.63, "rgba(40, 32, 25, 0.08)");
 
   // A Ring (medium density, fine ringlets)
-  gradient.addColorStop(0.66, 'rgba(210, 185, 145, 0.85)');
-  gradient.addColorStop(0.78, 'rgba(225, 200, 160, 0.80)');
-  gradient.addColorStop(0.88, 'rgba(195, 170, 130, 0.70)');
+  gradient.addColorStop(0.66, "rgba(210, 185, 145, 0.85)");
+  gradient.addColorStop(0.78, "rgba(225, 200, 160, 0.80)");
+  gradient.addColorStop(0.88, "rgba(195, 170, 130, 0.70)");
 
   // Encke Gap and outer edge
-  gradient.addColorStop(0.92, 'rgba(60, 50, 40, 0.1)');
-  gradient.addColorStop(0.96, 'rgba(170, 145, 115, 0.4)');
-  gradient.addColorStop(1.00, 'rgba(120, 100, 80, 0.0)');
+  gradient.addColorStop(0.92, "rgba(60, 50, 40, 0.1)");
+  gradient.addColorStop(0.96, "rgba(170, 145, 115, 0.4)");
+  gradient.addColorStop(1.0, "rgba(120, 100, 80, 0.0)");
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, 16);
@@ -209,8 +209,8 @@ function drawEarthTexture(ctx, size) {
       const n = fbm(nx, ny, 6);
 
       // Polar Ice Caps
-      if (latDistFromPole < 0.12 + (n * 0.06)) {
-        data[idx] = 238;     // R
+      if (latDistFromPole < 0.12 + n * 0.06) {
+        data[idx] = 238; // R
         data[idx + 1] = 245; // G
         data[idx + 2] = 255; // B
         data[idx + 3] = 255;
