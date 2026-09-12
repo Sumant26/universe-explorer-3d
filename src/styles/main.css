@@ -1,0 +1,205 @@
+/*
+  main.css — reset, typography, and the cozy warm base palette.
+  Inspired by slowroads.io: minimal chrome, soft colors, generous
+  whitespace, gentle motion. Nothing should feel harsh or clinical.
+*/
+
+:root {
+  --color-bg: #0c0a12;
+  --color-panel: rgba(28, 22, 34, 0.72);
+  --color-panel-border: rgba(255, 214, 170, 0.18);
+  --color-text: #f4ecdd;
+  --color-text-muted: #c9bfae;
+  --color-accent: #ffb066;
+  --color-accent-soft: #ffd9a8;
+  --color-good: #9ee6a8;
+  --color-bad: #e69a9a;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#scene-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Boot screen ---------- */
+#boot-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 40%, #241a2e 0%, #0c0a12 70%);
+  z-index: 50;
+  transition: opacity 0.6s ease;
+}
+
+#boot-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-card {
+  text-align: center;
+  padding: 2rem 3rem;
+  max-width: 90vw;
+}
+
+.boot-card h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.5rem;
+  color: var(--color-accent-soft);
+  letter-spacing: 0.02em;
+}
+
+.boot-card p {
+  color: var(--color-text-muted);
+  margin: 0 0 1.5rem;
+}
+
+.boot-glow {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.2rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-accent-soft), transparent 70%);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+.boot-bar {
+  width: 260px;
+  max-width: 60vw;
+  height: 6px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+#boot-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-soft));
+  transition: width 0.4s ease;
+}
+
+/* ---------- Fatal error ---------- */
+#fatal-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 10, 18, 0.92);
+  z-index: 60;
+}
+
+#fatal-error[hidden] {
+  display: none !important;
+}
+
+.error-card {
+  max-width: 420px;
+  text-align: center;
+  padding: 2rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.error-card h2 {
+  margin-top: 0;
+  color: var(--color-accent-soft);
+}
+
+.error-card button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: #241a12;
+  font-weight: 600;
+}
+
+/* ---------- Toasts ---------- */
+#toast-root {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 0.55rem 1.1rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  box-shadow: var(--shadow-soft);
+  animation: toast-in 0.25s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

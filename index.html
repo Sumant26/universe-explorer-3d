@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Cosmos Cabin — A Cozy Universe Explorer</title>
+  <meta name="description" content="Drift through a curated, cozy 3D universe in a warm little spaceship cabin. Search any world, watch the ship fly there, and learn about it when you arrive." />
+  <link rel="stylesheet" href="/src/styles/main.css" />
+  <link rel="stylesheet" href="/src/styles/hud.css" />
+  <link rel="stylesheet" href="/src/styles/cockpit.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene-canvas" aria-label="3D universe view"></canvas>
+
+    <!-- Friendly loading / boot screen -->
+    <div id="boot-screen" role="status" aria-live="polite">
+      <div class="boot-card">
+        <div class="boot-glow"></div>
+        <h1>Cosmos Cabin</h1>
+        <p id="boot-message">Warming up the engines&hellip;</p>
+        <div class="boot-bar"><div id="boot-bar-fill"></div></div>
+      </div>
+    </div>
+
+    <!-- Fatal error fallback (WebGL missing, crash, etc.) -->
+    <div id="fatal-error" hidden>
+      <div class="error-card">
+        <h2>We hit some turbulence</h2>
+        <p id="fatal-error-message">Something went wrong starting the cabin.</p>
+        <button id="fatal-error-retry" type="button">Try again</button>
+      </div>
+    </div>
+
+    <!-- Top HUD: search + view switcher -->
+    <header id="top-hud" class="hud-layer">
+      <div id="nav-search-root"></div>
+      <div id="view-switcher-root"></div>
+    </header>
+
+    <!-- Side panels -->
+    <aside id="detail-panel-root" class="hud-layer"></aside>
+    <aside id="habitability-matrix-root" class="hud-layer"></aside>
+    <aside id="satellite-list-root" class="hud-layer"></aside>
+
+    <!-- Bottom telemetry / compass -->
+    <footer id="bottom-hud" class="hud-layer">
+      <div id="telemetry-root"></div>
+      <div id="compass-root"></div>
+      <div id="radar-root"></div>
+    </footer>
+
+    <!-- Cockpit overlay (only visible in cockpit view) -->
+    <div id="cockpit-overlay" class="hud-layer" hidden></div>
+
+    <div id="toast-root" class="hud-layer" aria-live="polite"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
