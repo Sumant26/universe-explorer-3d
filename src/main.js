@@ -15,12 +15,19 @@ import { CELESTIAL_BODIES, getCelestialBodyById, validateCelestialData } from ".
 import { SATELLITES, getSatelliteById, validateSatelliteData } from "./celestial/SatelliteData.js";
 import { buildCelestialObject, buildSatelliteMarker, buildStarfield } from "./celestial/CelestialFactory.js";
 import { resolveScenePositions, resolveSatellitePositions } from "./celestial/PositionResolver.js";
+import { ConstellationOverlay } from "./celestial/ConstellationOverlay.js";
 import { buildSpaceship } from "./spaceship/Cockpit.js";
 import { FlightCamera } from "./spaceship/FlightCamera.js";
 import { WarpController } from "./spaceship/WarpController.js";
 import { ManualNavigator } from "./spaceship/ManualNavigator.js";
 import { resolveCelestialCollisions } from "./spaceship/FlightPhysics.js";
+import { CockpitInteractions } from "./spaceship/CockpitInteractions.js";
+import { GamepadTouchControls } from "./spaceship/GamepadTouchControls.js";
+import { calculateAtmosphericDensity, calculateReentryHeating } from "./physics/AtmosphericFlightEngine.js";
+import { predictOrbitalTrajectory } from "./physics/OrbitalTrajectoryPredictor.js";
+import { calculateGravitationalTimeDilation } from "./physics/RelativityEngine.js";
 import { SoundSynthesizer } from "./audio/SoundSynthesizer.js";
+import { SpaceRadio } from "./audio/SpaceRadio.js";
 import { NavigationSearch } from "./ui/NavigationSearch.js";
 import { DetailPanel } from "./ui/DetailPanel.js";
 import { HabitabilityMatrix } from "./ui/HabitabilityMatrix.js";
@@ -29,6 +36,8 @@ import { CompassArrow } from "./ui/CompassArrow.js";
 import { ViewSwitcher } from "./ui/ViewSwitcher.js";
 import { TelemetryHUD } from "./ui/TelemetryHUD.js";
 import { RadarCanvas } from "./ui/RadarCanvas.js";
+import { PhotoMode } from "./ui/PhotoMode.js";
+import { LogbookModal } from "./ui/LogbookModal.js";
 import { initHUDController } from "./ui/HUDController.js";
 
 bootstrap().catch((err) => showFatalError(err));
@@ -66,10 +75,28 @@ async function bootstrap() {
   engine.scene.add(buildStarfield());
   engine.scene.add(new THREE.AmbientLight(0x3a3050, 0.6));
 
+  const constellationOverlay = new ConstellationOverlay(engine.scene);
+  store.subscribe(
+    (s) => s.ui.constellationsVisible,
+    (visible) => constellationOverlay.toggle(visible)
+  );
+
+  // Real-time gravitational slingshot trajectory projection line
+  const trajectoryGeom = new THREE.BufferGeometry();
+  const trajectoryMat = new THREE.LineBasicMaterial({
+    color: 0x62e8ff,
+    transparent: true,
+    opacity: 0.65,
+    blending: THREE.AdditiveBlending,
+  });
+  const trajectoryLine = new THREE.Line(trajectoryGeom, trajectoryMat);
+  trajectoryLine.name = "slingshot-trajectory";
+  engine.scene.add(trajectoryLine);
+
   const { celestialGroups, satelliteGroups } = buildUniverse(engine);
 
   setBootMessage("Warming up the engines…", 75);
-  const { ship, update: updateShip } = buildSpaceship();
+  const { ship, update: updateShip, bobbleheadPhysics } = buildSpaceship();
   engine.scene.add(ship);
   const earthPos = celestialGroups.get("earth")?.position ?? new THREE.Vector3();
   // Spawn in comfortable Earth orbit facing directly outward into deep space
@@ -81,11 +108,49 @@ async function bootstrap() {
   const warpController = new WarpController({ scene: engine.scene, ship, store });
   const manualNavigator = new ManualNavigator();
   const audio = new SoundSynthesizer();
+  const spaceRadio = new SpaceRadio();
+
+  const cockpitInteractions = new CockpitInteractions({
+    camera: engine.camera,
+    shipGroup: ship,
+    audio,
+    spaceRadio,
+    bobbleheadProp: bobbleheadPhysics,
+    onEngageWarp: () => engageAutopilotIfReady(),
+    onShowToast: (msg) => showToast(msg),
+  });
+
+  const gamepadControls = new GamepadTouchControls({
+    onToggleCamera: () => {
+      const mode = store.getState().cameraMode;
+      const next =
+        mode === CameraMode.COCKPIT
+          ? CameraMode.THIRD_PERSON
+          : mode === CameraMode.THIRD_PERSON
+            ? CameraMode.CINEMATIC
+            : CameraMode.COCKPIT;
+      store.dispatch(Actions.setCameraMode(next));
+    },
+    onToggleHyperdrive: () => {
+      const locked = manualNavigator.toggleHyperdriveLock();
+      showToast(locked ? "Hyperdrive Locked ON" : "Hyperdrive Disengaged");
+    },
+  });
 
   setBootMessage("Opening the star charts…", 90);
   const ui = mountUI(store, {
+    canvas,
+    camera: engine.camera,
     onSearchSelect: (result) => handleTargetSelected(result.id, result.kind),
     onSatelliteSelect: (id) => handleTargetSelected(id, "satellite"),
+    onToggleRadio: () => {
+      const isPowerOn = spaceRadio.togglePower();
+      if (isPowerOn) {
+        showToast(`📻 Space Radio: ${spaceRadio.getCurrentStation().name}`);
+      } else {
+        showToast("📻 Space Radio: Powered OFF");
+      }
+    },
     onToggleHyperdrive: () => {
       const locked = manualNavigator.toggleHyperdriveLock();
       showToast(locked ? "Hyperdrive Locked ON" : "Hyperdrive Disengaged");
@@ -95,7 +160,12 @@ async function bootstrap() {
   });
 
   const viewSwitcherEl = document.getElementById("view-switcher-root");
-  const viewSwitcher = new ViewSwitcher(viewSwitcherEl, store);
+  const viewSwitcher = new ViewSwitcher(viewSwitcherEl, store, {
+    onToggleRadio: () => {
+      const isPowerOn = spaceRadio.togglePower();
+      showToast(isPowerOn ? `📻 ${spaceRadio.getCurrentStation().name}` : "📻 Radio: OFF");
+    },
+  });
 
   initHUDController({
     store,
@@ -104,7 +174,17 @@ async function bootstrap() {
     onEngageWarp: () => engageAutopilotIfReady(),
   });
 
-  wireInputAndAudio(engine, ship, manualNavigator, audio, flightCamera, store);
+  wireInputAndAudio(
+    engine,
+    ship,
+    manualNavigator,
+    audio,
+    spaceRadio,
+    flightCamera,
+    store,
+    cockpitInteractions,
+    spaceRadio
+  );
 
   function handleTargetSelected(id, kind) {
     const targetGroup = kind === "satellite" ? satelliteGroups.get(id) : celestialGroups.get(id);
@@ -156,6 +236,14 @@ async function bootstrap() {
     audio.playChirp();
     ui.detailPanel.show(id);
     manualNavigator.setTarget(null);
+
+    const body = getCelestialBodyById(id);
+    const sat = getSatelliteById(id);
+    const name = body?.name ?? sat?.name ?? id;
+    const kind = sat ? "satellite" : (body?.type ?? "planet");
+    const category = body?.system ?? sat?.missionType ?? "Exploration";
+
+    store.dispatch(Actions.recordDiscovery({ id, name, kind, category }));
   }
 
   engine.onTick((dt, elapsed) => {
@@ -168,26 +256,115 @@ async function bootstrap() {
 
     const isWarping = warpController.isActive;
 
+    // Check atmospheric flight skimming against nearby planetary bodies
+    let maxReentryHeat = 0;
+    let currentDrag = 0;
+
+    const shipPos = ship.position;
+    for (const [bodyId, group] of celestialGroups) {
+      const body = getCelestialBodyById(bodyId);
+      if (!body || !group || !body.environment?.atmosphericPressureAtm) continue;
+
+      const dist = shipPos.distanceTo(group.position);
+      const vRadius = group.userData.visualRadius || 1.0;
+
+      const atmo = calculateAtmosphericDensity(dist, vRadius, 1.2, body.environment.atmosphericPressureAtm);
+
+      if (atmo.inAtmosphere) {
+        const shipSpeed = Math.sqrt(
+          (ship.userData.velocity?.x ?? 0) ** 2 +
+            (ship.userData.velocity?.y ?? 0) ** 2 +
+            (ship.userData.velocity?.z ?? 0) ** 2
+        );
+        const heat = calculateReentryHeating(shipSpeed, atmo.densityFraction, 12);
+        maxReentryHeat = Math.max(maxReentryHeat, heat.heatIntensity);
+        currentDrag = Math.max(currentDrag, heat.dragForce);
+      }
+    }
+
     if (!isWarping) {
+      // Poll gamepad and virtual touch inputs
+      const gp = gamepadControls.poll();
+      if (gp.thrust !== 0 || gp.strafe !== 0 || gp.pitch !== 0 || gp.yaw !== 0 || gp.boost) {
+        currentInput = gp;
+      }
+
       // Step manual flight simulation with celestial collision protection
       const flightResult = stepManualFlight(dt, ship, manualNavigator, store, ui, onArrival, celestialGroups);
       if (flightResult && flightResult.input) {
         currentInput = flightResult.input;
       }
+
+      // Apply atmospheric drag if skimming through an atmosphere
+      if (currentDrag > 0 && ship.userData.velocity) {
+        ship.userData.velocity.x *= Math.max(1.0 - currentDrag * dt * 0.1, 0.2);
+        ship.userData.velocity.y *= Math.max(1.0 - currentDrag * dt * 0.1, 0.2);
+        ship.userData.velocity.z *= Math.max(1.0 - currentDrag * dt * 0.1, 0.2);
+      }
+
       isBoosting = Boolean(currentInput.boost);
       const speed = Math.sqrt(
         ship.userData.velocity.x ** 2 + ship.userData.velocity.y ** 2 + ship.userData.velocity.z ** 2
       );
       speedFraction = isBoosting ? speed / 180 : speed / 24;
       ui.telemetry.updateDriveMode(isBoosting);
+
+      // Real-time gravitational slingshot trajectory prediction
+      const massiveBodies = [];
+      for (const [id, grp] of celestialGroups) {
+        const body = getCelestialBodyById(id);
+        if (body && ["star", "planet", "blackHole"].includes(body.type)) {
+          massiveBodies.push({
+            position: { x: grp.position.x, y: grp.position.y, z: grp.position.z },
+            mass: body.type === "blackHole" ? 40 : body.type === "star" ? 20 : (grp.userData.visualRadius || 1) * 3,
+            safeRadius: grp.userData.safeRadius || 1.0,
+          });
+        }
+      }
+
+      if (trajectoryLine) {
+        const points = predictOrbitalTrajectory(
+          { x: ship.position.x, y: ship.position.y, z: ship.position.z },
+          ship.userData.velocity || { x: 0, y: 0, z: 0 },
+          massiveBodies,
+          40,
+          0.1
+        );
+        const vectors = points.map((p) => new THREE.Vector3(p.x, p.y, p.z));
+        trajectoryLine.geometry.setFromPoints(vectors);
+        trajectoryLine.visible = store.getState().flightMode === FlightMode.MANUAL && speed > 0.1;
+      }
     } else {
       speedFraction = store.getState().flightTelemetry.currentSpeedC;
       isBoosting = true;
       ui.telemetry.updateDriveMode(true);
+      if (trajectoryLine) trajectoryLine.visible = false;
     }
 
-    // Update 3D ship animations (interior/exterior visibility, plumes, stick tilt, holo-globe)
-    updateShip(dt, speedFraction, isBoosting, currentInput, store.getState().cameraMode);
+    // Dynamic Gravitational Time Dilation near Sagittarius A*
+    const sagA = celestialGroups.get("sagittarius-a");
+    if (sagA) {
+      const distToSagA = ship.position.distanceTo(sagA.position);
+      if (distToSagA < 8.0) {
+        const dilation = calculateGravitationalTimeDilation(distToSagA * 5e6, 4.15e6);
+        if (!dilation.isInsideEventHorizon) {
+          store.dispatch(
+            Actions.updateTelemetry({
+              timeDilationShipSec: 1,
+              timeDilationEarthSec: dilation.timeRatio,
+            })
+          );
+        }
+      }
+    }
+
+    // Update 3D ship animations & bobblehead physics
+    const flightForces = {
+      accZ: (currentInput.thrust || 0) * (isBoosting ? 22 : 8),
+      yawRate: (currentInput.yaw || 0) * 8,
+      pitchRate: (currentInput.pitch || 0) * 8,
+    };
+    updateShip(dt, speedFraction, isBoosting, currentInput, store.getState().cameraMode, flightForces, maxReentryHeat);
 
     flightCamera.setMode(store.getState().cameraMode);
     flightCamera.update(dt, isBoosting, speedFraction);
@@ -361,13 +538,18 @@ function updateRadar(radar, ship, celestialGroups, satelliteGroups) {
 }
 
 /** @private mounts every DOM-facing UI widget and returns handles for the main loop. */
-function mountUI(store, { onSearchSelect, onSatelliteSelect, onToggleHyperdrive, onZoomIn, onZoomOut }) {
+function mountUI(
+  store,
+  { canvas, camera, onSearchSelect, onSatelliteSelect, _onToggleRadio, onToggleHyperdrive, onZoomIn, onZoomOut }
+) {
   const searchRoot = document.getElementById("nav-search-root");
   const detailRoot = document.getElementById("detail-panel-root");
   const satelliteRoot = document.getElementById("satellite-list-root");
   const telemetryRoot = document.getElementById("telemetry-root");
   const compassRoot = document.getElementById("compass-root");
   const radarRoot = document.getElementById("radar-root");
+  const photoRoot = document.getElementById("photo-mode-root");
+  const logbookRoot = document.getElementById("logbook-root");
 
   const habitabilityRoot = document.getElementById("habitability-matrix-root");
 
@@ -379,23 +561,37 @@ function mountUI(store, { onSearchSelect, onSatelliteSelect, onToggleHyperdrive,
   const telemetry = new TelemetryHUD(telemetryRoot, store, { onToggleHyperdrive, onZoomIn, onZoomOut });
   const radar = new RadarCanvas(radarRoot);
 
-  // Toggle the satellite list open by default is left to the user; expose a
-  // simple affordance via double-clicking the search box mode toggle area
-  // is out of scope — instead, open it once on first load so it's discoverable.
+  const photoMode = new PhotoMode(photoRoot, store, {
+    canvas,
+    camera,
+    onShowToast: (msg) => showToast(msg),
+  });
+
+  const logbook = new LogbookModal(logbookRoot, store, {
+    onSelectTarget: onSearchSelect,
+  });
+
   store.dispatch(Actions.toggleSatelliteList(true));
 
-  return { search, detailPanel, habitabilityMatrix, satelliteList, compass, telemetry, radar };
+  return { search, detailPanel, habitabilityMatrix, satelliteList, compass, telemetry, radar, photoMode, logbook };
 }
 
 /** @private keyboard/mouse input plumbing + first-gesture audio unlock. */
-function wireInputAndAudio(engine, ship, manualNavigator, audio, flightCamera, store) {
+function wireInputAndAudio(engine, ship, manualNavigator, audio, spaceRadio, flightCamera, store, cockpitInteractions) {
   const unlockAudio = () => {
     audio.init();
+    if (spaceRadio && audio._ctx) {
+      spaceRadio.setContext(audio._ctx);
+    }
     window.removeEventListener("pointerdown", unlockAudio);
     window.removeEventListener("keydown", unlockAudio);
   };
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
+
+  window.addEventListener("click", (e) => {
+    cockpitInteractions.handleClick(e, store.getState().cameraMode === CameraMode.COCKPIT);
+  });
 
   window.addEventListener("keydown", (e) => {
     const isTyping = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
@@ -405,6 +601,17 @@ function wireInputAndAudio(engine, ship, manualNavigator, audio, flightCamera, s
       flightCamera.adjustZoom(-0.15);
     } else if (e.code === "Minus" || e.code === "NumpadSubtract" || e.code === "PageDown") {
       flightCamera.adjustZoom(0.15);
+    } else if (e.code === "KeyO") {
+      store.dispatch(Actions.toggleConstellations());
+      const on = store.getState().ui.constellationsVisible;
+      showToast(on ? "✨ Constellation Charts: ON" : "✨ Constellation Charts: OFF");
+    } else if (e.code === "KeyP") {
+      store.dispatch(Actions.togglePhotoMode(true));
+    } else if (e.code === "KeyL") {
+      store.dispatch(Actions.toggleLogbook(true));
+    } else if (e.code === "KeyR") {
+      const isPowerOn = spaceRadio.togglePower();
+      showToast(isPowerOn ? `📻 ${spaceRadio.getCurrentStation().name}` : "📻 Space Radio: OFF");
     }
     manualNavigator.handleKeyDown(e);
   });

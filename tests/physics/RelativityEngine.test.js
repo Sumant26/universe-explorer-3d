@@ -5,6 +5,7 @@ import {
   travelTimeSeconds,
   computeTravelBreakdown,
   formatDuration,
+  calculateGravitationalTimeDilation,
   SPEED_OF_LIGHT_KM_S,
 } from "../../src/physics/RelativityEngine.js";
 
@@ -75,5 +76,23 @@ describe("RelativityEngine", () => {
     expect(formatDuration(Infinity)).toBe("effectively forever");
     expect(formatDuration(-5)).toBe("0 seconds");
     expect(formatDuration(NaN)).toBe("effectively forever");
+  });
+
+  it("calculates gravitational time dilation near a black hole", () => {
+    // 10 Schwarzschild radii away
+    const result10Rs = calculateGravitationalTimeDilation(1.2e8, 4.15e6);
+    expect(result10Rs.isInsideEventHorizon).toBe(false);
+    expect(result10Rs.dilationFactor).toBeGreaterThan(0.9);
+    expect(result10Rs.dilationFactor).toBeLessThan(1.0);
+
+    // 1.2 Schwarzschild radii away (strong dilation)
+    const resultClose = calculateGravitationalTimeDilation(1.5e7, 4.15e6);
+    expect(resultClose.dilationFactor).toBeLessThan(0.5);
+    expect(resultClose.timeRatio).toBeGreaterThan(2.0);
+
+    // Inside horizon
+    const inside = calculateGravitationalTimeDilation(5e6, 4.15e6);
+    expect(inside.isInsideEventHorizon).toBe(true);
+    expect(inside.dilationFactor).toBe(0);
   });
 });

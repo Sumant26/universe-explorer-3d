@@ -587,3 +587,54 @@ function drawGenericRockyTexture(ctx, size) {
   }
   ctx.putImageData(imgData, 0, 0);
 }
+
+/**
+ * Creates procedural glowing night city lights texture for Earth and habitable worlds.
+ * @param {number} [size=512]
+ * @returns {THREE.CanvasTexture}
+ */
+export function createEarthNightLightsTexture(size = 512) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+
+  for (let y = 0; y < size; y++) {
+    const lat = (y / size - 0.5) * Math.PI;
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const lon = (x / size) * Math.PI * 2;
+
+      // Use continental mask logic from drawEarthTexture
+      const landNoise = fbm(Math.cos(lon) * 2.2 + 5, Math.sin(lon) * 2.2 + Math.sin(lat) * 2.5, 4);
+      const isLand = landNoise > 0.48 && Math.abs(lat) < 1.25;
+
+      if (isLand) {
+        // City clusters along coasts and interior hubs
+        const cityCluster = noise2D((x / size) * 32, (y / size) * 32);
+        const cityNode = noise2D((x / size) * 64, (y / size) * 64);
+        if (cityCluster > 0.65 && cityNode > 0.55) {
+          const intensity = Math.floor((cityCluster - 0.65) * 650);
+          data[idx] = Math.min(intensity + 50, 255); // Warm amber gold
+          data[idx + 1] = Math.min(intensity * 0.8, 210);
+          data[idx + 2] = Math.min(intensity * 0.4, 120);
+          data[idx + 3] = 255;
+          continue;
+        }
+      }
+
+      // Dark unlit ocean/unpopulated land
+      data[idx] = 0;
+      data[idx + 1] = 0;
+      data[idx + 2] = 0;
+      data[idx + 3] = 255;
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  return new THREE.CanvasTexture(canvas);
+}

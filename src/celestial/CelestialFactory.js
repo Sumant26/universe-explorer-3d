@@ -14,8 +14,10 @@ import { createEventHorizonMaterial, createAccretionDiskMaterial } from "./shade
 import {
   createCelestialTexture,
   createEarthCloudTexture,
+  createEarthNightLightsTexture,
   createSaturnRingTexture,
 } from "./PlanetProceduralTextures.js";
+import { buildVolumetricNebula } from "./VolumetricNebulaFactory.js";
 
 const SEGMENTS = 48;
 
@@ -76,11 +78,20 @@ function buildRockyBody(body) {
   const radius = visualRadius(body);
   const geometry = new THREE.SphereGeometry(radius, SEGMENTS, SEGMENTS);
   const texture = createCelestialTexture(body.id, 512);
-  const material = new THREE.MeshStandardMaterial({
+
+  const matConfig = {
     map: texture,
     roughness: body.environment.isGasGiant ? 0.85 : 0.7,
     metalness: body.environment.isGasGiant ? 0.0 : 0.08,
-  });
+  };
+
+  if (body.id === "earth") {
+    matConfig.emissiveMap = createEarthNightLightsTexture(512);
+    matConfig.emissive = new THREE.Color(0xffe0aa);
+    matConfig.emissiveIntensity = 0.95;
+  }
+
+  const material = new THREE.MeshStandardMaterial(matConfig);
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = `surface:${body.id}`;
 
@@ -212,30 +223,7 @@ function buildBlackHole(body) {
 }
 
 function buildNebula(body) {
-  const count = 1200;
-  const positions = new Float32Array(count * 3);
-  const radius = Math.max(visualRadius(body) * 4, 4);
-  for (let i = 0; i < count; i++) {
-    const r = radius * Math.cbrt(Math.random());
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.5;
-    positions[i * 3 + 2] = r * Math.cos(phi);
-  }
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  const material = new THREE.PointsMaterial({
-    color: body.colorHex,
-    size: 0.35,
-    transparent: true,
-    opacity: 0.55,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-  });
-  const points = new THREE.Points(geometry, material);
-  points.name = `nebula:${body.id}`;
-  return points;
+  return buildVolumetricNebula(body, visualRadius(body));
 }
 
 function buildGalaxy(body) {

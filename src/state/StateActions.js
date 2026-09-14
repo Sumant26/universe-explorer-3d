@@ -21,7 +21,10 @@ export const ActionTypes = Object.freeze({
   TOGGLE_HABITABILITY: "TOGGLE_HABITABILITY",
   TOGGLE_SATELLITE_LIST: "TOGGLE_SATELLITE_LIST",
   TOGGLE_AUDIO_MUTED: "TOGGLE_AUDIO_MUTED",
-  TOGGLE_HUD: "TOGGLE_HUD",
+  TOGGLE_PHOTO_MODE: "TOGGLE_PHOTO_MODE",
+  TOGGLE_LOGBOOK: "TOGGLE_LOGBOOK",
+  TOGGLE_CONSTELLATIONS: "TOGGLE_CONSTELLATIONS",
+  RECORD_DISCOVERY: "RECORD_DISCOVERY",
   PUSH_HISTORY: "PUSH_HISTORY",
   REPORT_ERROR: "REPORT_ERROR",
   CLEAR_ERROR: "CLEAR_ERROR",
@@ -48,6 +51,7 @@ export const CameraMode = Object.freeze({
   COCKPIT: "COCKPIT",
   THIRD_PERSON: "THIRD_PERSON",
   CINEMATIC: "CINEMATIC",
+  PHOTO: "PHOTO",
 });
 
 function assertString(value, name) {
@@ -92,6 +96,10 @@ export const Actions = {
   toggleSatelliteList: (force) => ({ type: ActionTypes.TOGGLE_SATELLITE_LIST, payload: force }),
   toggleAudioMuted: (force) => ({ type: ActionTypes.TOGGLE_AUDIO_MUTED, payload: force }),
   toggleHud: (force) => ({ type: ActionTypes.TOGGLE_HUD, payload: force }),
+  togglePhotoMode: (force) => ({ type: ActionTypes.TOGGLE_PHOTO_MODE, payload: force }),
+  toggleLogbook: (force) => ({ type: ActionTypes.TOGGLE_LOGBOOK, payload: force }),
+  toggleConstellations: (force) => ({ type: ActionTypes.TOGGLE_CONSTELLATIONS, payload: force }),
+  recordDiscovery: (discovery) => ({ type: ActionTypes.RECORD_DISCOVERY, payload: discovery }),
   pushHistory: (entry) => ({ type: ActionTypes.PUSH_HISTORY, payload: entry }),
   reportError: (error) => ({
     type: ActionTypes.REPORT_ERROR,

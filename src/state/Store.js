@@ -33,10 +33,14 @@ export function createInitialState() {
       headingDeg: 0,
     },
     history: [],
+    discoveries: [{ id: "earth", name: "Earth", kind: "planet", discoveredAt: Date.now(), category: "Home Planet" }],
     ui: {
       isDetailPanelOpen: false,
       isHabitabilityOpen: false,
       isSatelliteListOpen: false,
+      isPhotoModeOpen: false,
+      isLogbookOpen: false,
+      constellationsVisible: false,
       searchQuery: "",
       audioMuted: false,
       hudVisible: true,
@@ -116,6 +120,42 @@ export function reducer(state, action) {
           isSatelliteListOpen: action.payload ?? !state.ui.isSatelliteListOpen,
         },
       };
+
+    case ActionTypes.TOGGLE_PHOTO_MODE:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isPhotoModeOpen: action.payload ?? !state.ui.isPhotoModeOpen,
+        },
+      };
+
+    case ActionTypes.TOGGLE_LOGBOOK:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isLogbookOpen: action.payload ?? !state.ui.isLogbookOpen,
+        },
+      };
+
+    case ActionTypes.TOGGLE_CONSTELLATIONS:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          constellationsVisible: action.payload ?? !state.ui.constellationsVisible,
+        },
+      };
+
+    case ActionTypes.RECORD_DISCOVERY: {
+      const exists = state.discoveries.some((d) => d.id === action.payload.id);
+      if (exists) return state;
+      return {
+        ...state,
+        discoveries: [...state.discoveries, { ...action.payload, discoveredAt: Date.now() }],
+      };
+    }
 
     case ActionTypes.TOGGLE_AUDIO_MUTED:
       return { ...state, ui: { ...state.ui, audioMuted: action.payload ?? !state.ui.audioMuted } };

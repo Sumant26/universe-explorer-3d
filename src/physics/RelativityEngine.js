@@ -102,6 +102,52 @@ export function formatDuration(seconds) {
   return `${(years / 1e6).toFixed(2)}M yr`;
 }
 
+/**
+ * Calculates gravitational time dilation factor near a massive body (Schwarzschild metric):
+ * t_ship = t_earth * sqrt(1 - r_s / r)
+ *
+ * @param {number} distanceKm Distance from singularity center in km.
+ * @param {number} [massSolarMasses=4.15e6] Mass of black hole in solar masses (defaults to Sag A*).
+ * @returns {{
+ *   schwarzschildRadiusKm: number,
+ *   dilationFactor: number,        // fraction (0..1) of proper time rate relative to distant observer
+ *   timeRatio: number,            // Earth seconds elapsed per 1 ship second
+ *   isInsideEventHorizon: boolean
+ * }}
+ */
+export function calculateGravitationalTimeDilation(distanceKm, massSolarMasses = 4.15e6) {
+  if (!Number.isFinite(distanceKm) || distanceKm <= 0) {
+    return {
+      schwarzschildRadiusKm: 0,
+      dilationFactor: 0,
+      timeRatio: Number.POSITIVE_INFINITY,
+      isInsideEventHorizon: true,
+    };
+  }
+
+  // Schwarzschild radius: r_s = 2.953 km per solar mass
+  const rsKm = massSolarMasses * 2.95325;
+  if (distanceKm <= rsKm) {
+    return {
+      schwarzschildRadiusKm: rsKm,
+      dilationFactor: 0,
+      timeRatio: Number.POSITIVE_INFINITY,
+      isInsideEventHorizon: true,
+    };
+  }
+
+  const factorSq = 1 - rsKm / distanceKm;
+  const dilationFactor = Math.sqrt(Math.max(factorSq, 0.000001));
+  const timeRatio = 1 / dilationFactor;
+
+  return {
+    schwarzschildRadiusKm: rsKm,
+    dilationFactor,
+    timeRatio,
+    isInsideEventHorizon: false,
+  };
+}
+
 /** @private clamp v/c into a safe, sub-luminal range. */
 function clampBeta(beta) {
   if (!Number.isFinite(beta)) return 0;

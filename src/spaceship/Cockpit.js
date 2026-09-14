@@ -9,6 +9,7 @@
 
 import * as THREE from "three";
 import { CameraMode } from "../state/StateActions.js";
+import { DashboardPhysicsProp } from "./DashboardPhysicsProp.js";
 
 const COZY_PALETTE = {
   porcelainCream: 0xf6efe4,
@@ -23,6 +24,7 @@ const COZY_PALETTE = {
   glowCyan: 0x62e8ff,
   glowGreen: 0x58e890,
   coffeeBrown: 0x3a1e0c,
+  radioDark: 0x1c1714,
 };
 
 /**
@@ -31,17 +33,20 @@ const COZY_PALETTE = {
  *   cockpitInterior: THREE.Group,
  *   exterior: THREE.Group,
  *   pilot: THREE.Group,
+ *   bobbleheadPhysics: DashboardPhysicsProp,
  *   thrusterGlow: THREE.PointLight,
  *   thrusterPlumes: THREE.Mesh[],
  *   flightStick: THREE.Group,
  *   holoGlobe: THREE.Group,
- *   update: (dt: number, speedFraction: number, isBoost: boolean, input: any, cameraMode: string) => void
+ *   update: (dt: number, speedFraction: number, isBoost: boolean, input: any, cameraMode: string, flightForces?: any, reentryHeat?: number) => void
  * }}
  */
 export function buildSpaceship() {
   const ship = new THREE.Group();
   ship.name = "spaceship";
   ship.scale.setScalar(0.24);
+
+  const bobbleheadPhysics = new DashboardPhysicsProp({ stiffness: 90, damping: 6.0, mass: 0.8 });
 
   const exterior = buildCozyExterior();
   const cockpitInterior = buildCozyCockpitInterior();
@@ -110,12 +115,28 @@ export function buildSpaceship() {
   dustParticles.name = "speed-dust";
   ship.add(dustParticles);
 
+  // Atmospheric re-entry plasma bow shock mesh around ship nose
+  const plasmaGeom = new THREE.SphereGeometry(0.55, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.2);
+  plasmaGeom.rotateX(-Math.PI / 2);
+  const plasmaMat = new THREE.MeshBasicMaterial({
+    color: 0xff6a2b,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+    side: THREE.BackSide,
+  });
+  const plasmaMesh = new THREE.Mesh(plasmaGeom, plasmaMat);
+  plasmaMesh.name = "reentry-plasma";
+  plasmaMesh.position.set(0, 0, -0.2);
+  exterior.add(plasmaMesh);
+
   ship.add(exterior, cockpitInterior, thrusterGlow);
 
   const flightStick = cockpitInterior.getObjectByName("flight-stick");
   const holoGlobe = cockpitInterior.getObjectByName("holo-globe");
   const horizonNeedle = cockpitInterior.getObjectByName("horizon-needle");
   const speedNeedle = cockpitInterior.getObjectByName("speed-needle");
+  const bobbleheadHead = cockpitInterior.getObjectByName("bobblehead-head");
   const steamPuffs = cockpitInterior.getObjectByName("coffee-steam")?.children ?? [];
   const exteriorCanopy = exterior.getObjectByName("exterior-canopy");
   const exteriorPortholes = exterior.getObjectByName("exterior-portholes");
@@ -123,7 +144,7 @@ export function buildSpaceship() {
   /**
    * Updates dynamic animations & camera mode visibility each tick.
    */
-  function update(dt, speedFraction, isBoost, input, cameraMode) {
+  function update(dt, speedFraction, isBoost, input, cameraMode, flightForces, reentryHeat = 0) {
     const isCockpit = cameraMode === CameraMode.COCKPIT;
 
     // In cockpit mode, hide outer hull / canopy parts that obstruct first-person view
@@ -145,6 +166,20 @@ export function buildSpaceship() {
       flightStick.rotation.x += (targetRotX - flightStick.rotation.x) * Math.min(dt * 12, 1);
     }
 
+    // Animate physics bobblehead on dashboard
+    if (bobbleheadHead) {
+      const propAngles = bobbleheadPhysics.update(
+        dt,
+        flightForces ?? {
+          accZ: (input?.thrust ?? 0) * (isBoost ? 22 : 8),
+          yawRate: (input?.yaw ?? 0) * 8,
+          pitchRate: (input?.pitch ?? 0) * 8,
+        }
+      );
+      bobbleheadHead.rotation.x = propAngles.rotationX;
+      bobbleheadHead.rotation.z = propAngles.rotationZ;
+    }
+
     // Animate artificial horizon and speed needle dials
     if (horizonNeedle && input) {
       horizonNeedle.rotation.z = -(input.yaw ?? 0) * 0.5;
@@ -152,6 +187,18 @@ export function buildSpaceship() {
     }
     if (speedNeedle) {
       speedNeedle.rotation.z = -speedFraction * Math.PI * 1.5;
+    }
+
+    // Dynamic Re-entry plasma shock visibility
+    if (plasmaMesh && plasmaMat) {
+      plasmaMat.opacity = Math.min(reentryHeat * 0.85, 0.9);
+      if (reentryHeat > 0.6) {
+        plasmaMat.color.setHex(0xaae8ff);
+      } else if (reentryHeat > 0.3) {
+        plasmaMat.color.setHex(0xffd066);
+      } else {
+        plasmaMat.color.setHex(0xff6a2b);
+      }
     }
 
     // Animate steaming coffee vapor puffs
@@ -217,6 +264,7 @@ export function buildSpaceship() {
     cockpitInterior,
     exterior,
     pilot,
+    bobbleheadPhysics,
     thrusterGlow,
     thrusterPlumes,
     flightStick,
@@ -472,7 +520,7 @@ function buildCozyCockpitInterior() {
   globeRing.rotation.x = Math.PI / 3;
   holoGlobe.add(globeMesh, globeRing);
 
-  // 6. Vintage Brass Cabin Lantern / Reading Lamp
+  // 6. Vintage Brass Cabin Lantern / Reading Lamp with Interactive Switch
   const lampGroup = new THREE.Group();
   lampGroup.position.set(-0.32, 0.02, -0.08);
 
@@ -481,12 +529,19 @@ function buildCozyCockpitInterior() {
     new THREE.CylinderGeometry(0.022, 0.022, 0.05, 10),
     new THREE.MeshBasicMaterial({ color: COZY_PALETTE.glowLantern })
   );
+  lampGlass.name = "lamp-bulb";
   lampGlass.position.y = 0.035;
   const lampCap = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.025, 10), brassMat);
   lampCap.position.y = 0.065;
-  lampGroup.add(lampBase, lampGlass, lampCap);
 
-  const lampLight = new THREE.PointLight(COZY_PALETTE.glowLantern, 0.8, 1.8, 2);
+  const lampSwitch = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.015, 0.02), brassMat);
+  lampSwitch.name = "switch-cabin-light";
+  lampSwitch.position.set(0, 0.01, 0.03);
+
+  lampGroup.add(lampBase, lampGlass, lampCap, lampSwitch);
+
+  const lampLight = new THREE.PointLight(COZY_PALETTE.glowLantern, 1.4, 2.2, 2);
+  lampLight.name = "cabin-lamp-light";
   lampLight.position.set(-0.32, 0.06, -0.06);
 
   // 7. Steaming Ceramic Coffee / Tea Mug in Dash Cupholder
@@ -523,7 +578,86 @@ function buildCozyCockpitInterior() {
 
   mugGroup.add(holderRing, mugBody, coffeeSurface, mugHandle, steamGroup);
 
-  // 8. Tactile Flight Control Stick
+  // 8. Physics-Based Dashboard Bobblehead (Cute alien astronaut with spring)
+  const bobbleheadGroup = new THREE.Group();
+  bobbleheadGroup.name = "bobblehead-prop";
+  bobbleheadGroup.position.set(-0.14, -0.04, -0.07);
+
+  const bobbleBase = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.03, 0.012, 12), brassMat);
+  const bobbleSpring = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.006, 0.006, 0.04, 8),
+    new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.9 })
+  );
+  bobbleSpring.position.y = 0.02;
+
+  const headGroup = new THREE.Group();
+  headGroup.name = "bobblehead-head";
+  headGroup.position.y = 0.045;
+
+  const alienHead = new THREE.Mesh(
+    new THREE.SphereGeometry(0.032, 12, 12),
+    new THREE.MeshStandardMaterial({ color: 0x58e890, roughness: 0.5 })
+  );
+  alienHead.scale.set(1.1, 1.25, 1.0);
+
+  // Big cute glossy alien eyes
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.01, 8, 8), eyeMat);
+  eyeL.position.set(-0.014, 0.005, 0.026);
+  const eyeR = eyeL.clone();
+  eyeR.position.x = 0.014;
+
+  // Mini antenna
+  const antennaStem = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.025, 6), brassMat);
+  antennaStem.position.y = 0.04;
+  const antennaTip = new THREE.Mesh(
+    new THREE.SphereGeometry(0.006, 6, 6),
+    new THREE.MeshBasicMaterial({ color: COZY_PALETTE.glowAmberWarm })
+  );
+  antennaTip.position.y = 0.052;
+
+  headGroup.add(alienHead, eyeL, eyeR, antennaStem, antennaTip);
+  bobbleheadGroup.add(bobbleBase, bobbleSpring, headGroup);
+
+  // 9. Retro Wooden Space Radio Box with Tuner Knob
+  const radioGroup = new THREE.Group();
+  radioGroup.name = "dash-radio";
+  radioGroup.position.set(0.14, -0.05, -0.07);
+
+  const radioBox = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.04, 0.045), woodMat);
+  const radioSpeaker = new THREE.Mesh(
+    new THREE.CircleGeometry(0.014, 12),
+    new THREE.MeshBasicMaterial({ color: 0x111111 })
+  );
+  radioSpeaker.position.set(-0.018, 0, 0.023);
+
+  const radioKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.015, 10), brassMat);
+  radioKnob.name = "radio-knob";
+  radioKnob.rotateX(Math.PI / 2);
+  radioKnob.position.set(0.018, 0, 0.025);
+
+  radioGroup.add(radioBox, radioSpeaker, radioKnob);
+
+  // 10. Warp Throttle Lever & HUD Palette Switch
+  const leverGroup = new THREE.Group();
+  leverGroup.name = "warp-lever";
+  leverGroup.position.set(-0.25, -0.1, -0.04);
+  const leverBase = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.02, 0.06), brassMat);
+  const leverHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.08, 8), woodMat);
+  leverHandle.position.set(0, 0.04, 0);
+  leverHandle.rotation.x = -0.25;
+  const leverKnob = new THREE.Mesh(
+    new THREE.SphereGeometry(0.014, 8, 8),
+    new THREE.MeshBasicMaterial({ color: COZY_PALETTE.glowAmberWarm })
+  );
+  leverKnob.position.set(0, 0.08, -0.015);
+  leverGroup.add(leverBase, leverHandle, leverKnob);
+
+  const paletteSwitch = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.015, 8), brassMat);
+  paletteSwitch.name = "palette-switch";
+  paletteSwitch.position.set(0.25, -0.08, -0.04);
+
+  // 11. Tactile Flight Control Stick
   const flightStick = new THREE.Group();
   flightStick.name = "flight-stick";
   flightStick.position.set(0, -0.16, 0.06);
@@ -535,7 +669,7 @@ function buildCozyCockpitInterior() {
   stickKnob.position.set(0, 0.16, 0);
   flightStick.add(stickBase, stickShaft, stickKnob);
 
-  // 9. Soft Fabric Pilot Seat
+  // 12. Soft Fabric Pilot Seat
   const seatMat = new THREE.MeshStandardMaterial({ color: COZY_PALETTE.seatFabric, roughness: 0.85 });
   const seatBase = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.09, 0.38), seatMat);
   seatBase.position.set(0, -0.28, 0.28);
@@ -562,6 +696,10 @@ function buildCozyCockpitInterior() {
     lampGroup,
     lampLight,
     mugGroup,
+    bobbleheadGroup,
+    radioGroup,
+    leverGroup,
+    paletteSwitch,
     flightStick,
     seatBase,
     seatBack,

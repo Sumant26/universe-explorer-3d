@@ -108,6 +108,13 @@
   color: var(--color-text-muted);
 }
 
+.view-switcher-container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .view-switcher {
   display: flex;
   gap: 0.4rem;
@@ -126,12 +133,48 @@
   padding: 0.45rem 0.9rem;
   border-radius: var(--radius-md);
   font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .view-btn.active {
   background: var(--color-accent);
   color: #241a12;
   font-weight: 600;
+}
+
+.quick-tools-bar {
+  display: flex;
+  gap: 0.35rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  padding: 0.35rem;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-soft);
+}
+
+.tool-btn {
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-muted);
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tool-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.tool-btn.active {
+  background: rgba(255, 176, 102, 0.2);
+  border-color: var(--color-accent);
+  color: var(--color-accent-soft);
 }
 
 /* ---------- Detail panel & satellite list ---------- */
@@ -577,4 +620,460 @@
 .radar-canvas {
   border-radius: 50%;
   box-shadow: var(--shadow-soft);
+}
+
+/* ==========================================================================
+   Photo Mode Overlay
+   ========================================================================== */
+.photo-mode-container {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.photo-mode-frame {
+  position: relative;
+  flex: 1;
+  border: 2px dashed rgba(255, 214, 170, 0.35);
+  margin: 1.5rem;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+.photo-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(20, 16, 12, 0.85);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent-soft);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(8px);
+}
+
+.photo-mode-bar {
+  pointer-events: auto;
+  margin: 0 1.5rem 1.5rem;
+  padding: 0.8rem 1.4rem;
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.photo-control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.photo-control-group input[type="range"] {
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.photo-filter-buttons {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.photo-filter-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-panel-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.photo-filter-btn.active,
+.photo-filter-btn:hover {
+  background: var(--color-accent);
+  color: #1a1410;
+  border-color: var(--color-accent);
+  font-weight: 600;
+}
+
+.photo-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.photo-btn-primary {
+  padding: 0.5rem 1.1rem;
+  background: linear-gradient(135deg, #ffb066, #ff7e40);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #1a1410;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 126, 64, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.photo-btn-primary:hover {
+  transform: scale(1.03);
+}
+
+.photo-btn-secondary {
+  padding: 0.5rem 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Expedition Logbook Modal
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(10, 8, 14, 0.78);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.logbook-modal {
+  width: min(840px, 92vw);
+  max-height: 85vh;
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logbook-header {
+  padding: 1.2rem 1.6rem;
+  border-bottom: 1px solid var(--color-panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logbook-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.logbook-icon {
+  font-size: 1.8rem;
+}
+
+.logbook-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--color-text);
+}
+
+.logbook-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-panel-border);
+  color: var(--color-text);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.logbook-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.6rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--color-panel-border);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-accent-soft);
+}
+
+.logbook-badges-section {
+  padding: 1rem 1.6rem;
+  border-bottom: 1px solid var(--color-panel-border);
+}
+
+.logbook-badges-section h3,
+.logbook-entries-section h3 {
+  margin: 0 0 0.8rem;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-panel-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.badge-item.locked {
+  opacity: 0.5;
+  filter: grayscale(0.8);
+}
+
+.badge-item.unlocked {
+  border-color: rgba(255, 176, 102, 0.4);
+  background: rgba(255, 176, 102, 0.08);
+}
+
+.badge-icon {
+  font-size: 1.4rem;
+}
+
+.badge-info strong {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--color-text);
+}
+
+.badge-info p {
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.logbook-entries-section {
+  padding: 1.2rem 1.6rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.entries-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-chip {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-panel-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.filter-chip.active {
+  background: var(--color-accent);
+  color: #1a1410;
+  font-weight: 600;
+}
+
+.logbook-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.logbook-card {
+  padding: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.logbook-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.card-tag {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+.tag-body {
+  background: rgba(255, 176, 102, 0.2);
+  color: var(--color-accent-soft);
+}
+
+.tag-satellite {
+  background: rgba(98, 232, 255, 0.2);
+  color: #62e8ff;
+}
+
+.logbook-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-time {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.logbook-fly-btn {
+  padding: 0.3rem 0.65rem;
+  background: rgba(255, 176, 102, 0.15);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logbook-fly-btn:hover {
+  background: var(--color-accent);
+  color: #1a1410;
+}
+
+.logbook-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+/* ==========================================================================
+   Mobile Virtual Touch Controls
+   ========================================================================== */
+.mobile-controls-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 2rem 1.5rem;
+}
+
+.touch-stick-zone {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.touch-stick-base {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(20, 16, 12, 0.55);
+  border: 2px solid rgba(255, 214, 170, 0.3);
+  backdrop-filter: blur(8px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.touch-stick-knob {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 14px rgba(255, 176, 102, 0.6);
+  pointer-events: none;
+}
+
+.stick-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.touch-actions-center {
+  pointer-events: auto;
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.touch-action-btn {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(20, 16, 12, 0.7);
+  border: 1px solid var(--color-panel-border);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  touch-action: none;
+}
+
+.touch-action-btn.active {
+  background: var(--color-accent);
+  color: #1a1410;
 }
