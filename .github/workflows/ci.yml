@@ -41,7 +41,7 @@ jobs:
       - name: Run Prettier Style Check
         run: npm run format:check
 
-      - name: Run Vitest Unit Tests (142 Tests)
+      - name: Run Vitest Unit Tests
         run: npm test
 
       - name: Build Application Bundle

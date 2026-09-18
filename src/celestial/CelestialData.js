@@ -246,7 +246,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Rock: 50, WaterIce: 50 },
     },
-    description: "The largest object in the asteroid belt, housing bright sodium carbonate salt deposits in Occator Crater.",
+    description:
+      "The largest object in the asteroid belt, housing bright sodium carbonate salt deposits in Occator Crater.",
     tags: ["dwarf planet", "asteroid belt", "ice world"],
   },
   {
@@ -332,7 +333,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 628_300_000,
     radiusKm: 1821.6,
     colorHex: 0xf5d033,
-    orbit: { parentId: "jupiter", semiMajorAxisAu: 0.00282, eccentricity: 0.0041, periodDays: 1.77, inclinationDeg: 0.05 },
+    orbit: {
+      parentId: "jupiter",
+      semiMajorAxisAu: 0.00282,
+      eccentricity: 0.0041,
+      periodDays: 1.77,
+      inclinationDeg: 0.05,
+    },
     environment: {
       surfaceTempC: -143,
       atmosphericPressureAtm: 0.000001,
@@ -356,7 +363,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 628_300_000,
     radiusKm: 1560.8,
     colorHex: 0xe4d8c4,
-    orbit: { parentId: "jupiter", semiMajorAxisAu: 0.0045, eccentricity: 0.009, periodDays: 3.55, inclinationDeg: 0.47 },
+    orbit: {
+      parentId: "jupiter",
+      semiMajorAxisAu: 0.0045,
+      eccentricity: 0.009,
+      periodDays: 3.55,
+      inclinationDeg: 0.47,
+    },
     environment: {
       surfaceTempC: -160,
       atmosphericPressureAtm: 0,
@@ -380,7 +393,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 628_500_000,
     radiusKm: 2634.1,
     colorHex: 0x9b9087,
-    orbit: { parentId: "jupiter", semiMajorAxisAu: 0.00715, eccentricity: 0.0013, periodDays: 7.15, inclinationDeg: 0.2 },
+    orbit: {
+      parentId: "jupiter",
+      semiMajorAxisAu: 0.00715,
+      eccentricity: 0.0013,
+      periodDays: 7.15,
+      inclinationDeg: 0.2,
+    },
     environment: {
       surfaceTempC: -163,
       atmosphericPressureAtm: 0,
@@ -404,7 +423,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 628_900_000,
     radiusKm: 2410.3,
     colorHex: 0x6e655b,
-    orbit: { parentId: "jupiter", semiMajorAxisAu: 0.01258, eccentricity: 0.0074, periodDays: 16.69, inclinationDeg: 0.28 },
+    orbit: {
+      parentId: "jupiter",
+      semiMajorAxisAu: 0.01258,
+      eccentricity: 0.0074,
+      periodDays: 16.69,
+      inclinationDeg: 0.28,
+    },
     environment: {
       surfaceTempC: -171,
       atmosphericPressureAtm: 0,
@@ -452,7 +477,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 1_275_000_000,
     radiusKm: 252.1,
     colorHex: 0xfafaff,
-    orbit: { parentId: "saturn", semiMajorAxisAu: 0.00159, eccentricity: 0.0047, periodDays: 1.37, inclinationDeg: 0.01 },
+    orbit: {
+      parentId: "saturn",
+      semiMajorAxisAu: 0.00159,
+      eccentricity: 0.0047,
+      periodDays: 1.37,
+      inclinationDeg: 0.01,
+    },
     environment: {
       surfaceTempC: -198,
       atmosphericPressureAtm: 0,
@@ -500,7 +531,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 1_275_000_000,
     radiusKm: 2574.7,
     colorHex: 0xe0a95c,
-    orbit: { parentId: "saturn", semiMajorAxisAu: 0.00817, eccentricity: 0.028, periodDays: 15.9, inclinationDeg: 0.35 },
+    orbit: {
+      parentId: "saturn",
+      semiMajorAxisAu: 0.00817,
+      eccentricity: 0.028,
+      periodDays: 15.9,
+      inclinationDeg: 0.35,
+    },
     environment: {
       surfaceTempC: -179,
       atmosphericPressureAtm: 1.45,
@@ -524,7 +561,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 1_275_000_000,
     radiusKm: 734.5,
     colorHex: 0x6e5d48,
-    orbit: { parentId: "saturn", semiMajorAxisAu: 0.0238, eccentricity: 0.028, periodDays: 79.3, inclinationDeg: 15.47 },
+    orbit: {
+      parentId: "saturn",
+      semiMajorAxisAu: 0.0238,
+      eccentricity: 0.028,
+      periodDays: 79.3,
+      inclinationDeg: 15.47,
+    },
     environment: {
       surfaceTempC: -180,
       atmosphericPressureAtm: 0,
@@ -534,7 +577,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { WaterIce: 80, Carbonaceous: 20 },
     },
-    description: "The yin-yang moon with one coal-dark hemisphere, one bright icy hemisphere, and a giant equatorial ridge.",
+    description:
+      "The yin-yang moon with one coal-dark hemisphere, one bright icy hemisphere, and a giant equatorial ridge.",
     tags: ["moon", "two-tone", "equatorial ridge"],
   },
   {
@@ -572,7 +616,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 2_720_000_000,
     radiusKm: 235.8,
     colorHex: 0xa2a9b2,
-    orbit: { parentId: "uranus", semiMajorAxisAu: 0.000865, eccentricity: 0.0013, periodDays: 1.41, inclinationDeg: 4.34 },
+    orbit: {
+      parentId: "uranus",
+      semiMajorAxisAu: 0.000865,
+      eccentricity: 0.0013,
+      periodDays: 1.41,
+      inclinationDeg: 4.34,
+    },
     environment: {
       surfaceTempC: -213,
       atmosphericPressureAtm: 0,
@@ -582,7 +632,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { WaterIce: 60, Silicates: 40 },
     },
-    description: "A jumbled Frankenstein moon of mismatched terrain featuring the sheer 20-km high Verona Rupes cliffs.",
+    description:
+      "A jumbled Frankenstein moon of mismatched terrain featuring the sheer 20-km high Verona Rupes cliffs.",
     tags: ["moon", "cliffs", "uranus moon"],
   },
   {
@@ -620,7 +671,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 4_350_000_000,
     radiusKm: 1353.4,
     colorHex: 0xbac9cc,
-    orbit: { parentId: "neptune", semiMajorAxisAu: 0.00237, eccentricity: 0.000016, periodDays: 5.88, inclinationDeg: 156.8 },
+    orbit: {
+      parentId: "neptune",
+      semiMajorAxisAu: 0.00237,
+      eccentricity: 0.000016,
+      periodDays: 5.88,
+      inclinationDeg: 156.8,
+    },
     environment: {
       surfaceTempC: -235,
       atmosphericPressureAtm: 0.000014,
@@ -630,7 +687,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { NitrogenIce: 55, WaterIce: 35, CO2: 10 },
     },
-    description: "A captured retrograde Kuiper Belt world erupting active cryo-nitrogen geysers across cantaloupe terrain.",
+    description:
+      "A captured retrograde Kuiper Belt world erupting active cryo-nitrogen geysers across cantaloupe terrain.",
     tags: ["moon", "retrograde", "geysers", "kuiper belt"],
   },
   {
@@ -654,7 +712,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { N2: 98, CH4: 1.5, CO: 0.5 },
     },
-    description: "A complex icy world at the Kuiper Belt frontier with nitrogen glaciers and the famous Tombaugh Regio heart.",
+    description:
+      "A complex icy world at the Kuiper Belt frontier with nitrogen glaciers and the famous Tombaugh Regio heart.",
     tags: ["dwarf planet", "kuiper belt", "heart"],
   },
   {
@@ -678,7 +737,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { WaterIce: 85, Organics: 15 },
     },
-    description: "Pluto's mutually tidally locked binary partner, marked by the reddish Mordor Macula north polar region.",
+    description:
+      "Pluto's mutually tidally locked binary partner, marked by the reddish Mordor Macula north polar region.",
     tags: ["moon", "binary planet", "kuiper belt"],
   },
   {
@@ -702,7 +762,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { MethaneIce: 70, NitrogenIce: 30 },
     },
-    description: "A massive, ultra-reflective scattered disc dwarf planet whose 2005 discovery led to the modern definition of a planet.",
+    description:
+      "A massive, ultra-reflective scattered disc dwarf planet whose 2005 discovery led to the modern definition of a planet.",
     tags: ["dwarf planet", "scattered disc", "trans-neptunian"],
   },
   {
@@ -726,7 +787,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { WaterIce: 90, Rock: 10 },
     },
-    description: "A bizarre, rapid-spinning football-shaped dwarf planet with crystalline ice rings and a 3.9-hour day.",
+    description:
+      "A bizarre, rapid-spinning football-shaped dwarf planet with crystalline ice rings and a 3.9-hour day.",
     tags: ["dwarf planet", "rings", "fast rotator", "kuiper belt"],
   },
   {
@@ -774,7 +836,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Tholins: 60, WaterIce: 40 },
     },
-    description: "One of the most distant known objects in the Solar System on an extreme 11,400-year inner Oort cloud orbit.",
+    description:
+      "One of the most distant known objects in the Solar System on an extreme 11,400-year inner Oort cloud orbit.",
     tags: ["dwarf planet", "oort cloud", "extreme orbit"],
   },
   {
@@ -822,7 +885,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { CarbonaceousTholins: 100 },
     },
-    description: "The first interstellar visitor ever detected passing through our Solar System from deep interstellar space.",
+    description:
+      "The first interstellar visitor ever detected passing through our Solar System from deep interstellar space.",
     tags: ["interstellar visitor", "asteroid", "hyperbolic"],
   },
   {
@@ -888,7 +952,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 39_920_000_000_000,
     radiusKm: 7000,
     colorHex: 0x8fa4c9,
-    orbit: { parentId: "proxima-centauri", semiMajorAxisAu: 0.0485, eccentricity: 0.02, periodDays: 11.2, inclinationDeg: 0 },
+    orbit: {
+      parentId: "proxima-centauri",
+      semiMajorAxisAu: 0.0485,
+      eccentricity: 0.02,
+      periodDays: 11.2,
+      inclinationDeg: 0,
+    },
     environment: {
       surfaceTempC: -39,
       atmosphericPressureAtm: 0.6,
@@ -1008,7 +1078,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 3.73e14,
     radiusKm: 5850,
     colorHex: 0x3d7ecc,
-    orbit: { parentId: "trappist-1", semiMajorAxisAu: 0.029, eccentricity: 0.005, periodDays: 6.1, inclinationDeg: 89.8 },
+    orbit: {
+      parentId: "trappist-1",
+      semiMajorAxisAu: 0.029,
+      eccentricity: 0.005,
+      periodDays: 6.1,
+      inclinationDeg: 89.8,
+    },
     environment: {
       surfaceTempC: -22,
       atmosphericPressureAtm: 1.1,
@@ -1018,7 +1094,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { N2: 70, O2: 18, CO2: 10, WaterVapor: 2 },
     },
-    description: "One of the most promising potentially habitable Earth-sized exoplanets known, with liquid water potential.",
+    description:
+      "One of the most promising potentially habitable Earth-sized exoplanets known, with liquid water potential.",
     tags: ["exoplanet", "habitable zone", "earth analog", "trappist"],
   },
   {
@@ -1032,7 +1109,13 @@ export const CELESTIAL_BODIES = [
     distanceFromEarthKm: 3.73e14,
     radiusKm: 6660,
     colorHex: 0x76a5af,
-    orbit: { parentId: "trappist-1", semiMajorAxisAu: 0.038, eccentricity: 0.01, periodDays: 9.2, inclinationDeg: 89.7 },
+    orbit: {
+      parentId: "trappist-1",
+      semiMajorAxisAu: 0.038,
+      eccentricity: 0.01,
+      periodDays: 9.2,
+      inclinationDeg: 89.7,
+    },
     environment: {
       surfaceTempC: -54,
       atmosphericPressureAtm: 1.5,
@@ -1042,7 +1125,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { WaterIce: 40, Silicates: 60 },
     },
-    description: "A temperate water-rich world in the TRAPPIST-1 system, likely wrapped in a global deep ocean or ice shell.",
+    description:
+      "A temperate water-rich world in the TRAPPIST-1 system, likely wrapped in a global deep ocean or ice shell.",
     tags: ["exoplanet", "ocean world", "trappist"],
   },
   {
@@ -1066,7 +1150,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { N2: 75, O2: 15, CO2: 10 },
     },
-    description: "'Earth's Older Cousin' — a super-Earth in the habitable zone of a G2-type sun-like star 1,800 light-years away.",
+    description:
+      "'Earth's Older Cousin' — a super-Earth in the habitable zone of a G2-type sun-like star 1,800 light-years away.",
     tags: ["exoplanet", "super-earth", "habitable zone", "earth cousin"],
   },
   {
@@ -1090,7 +1175,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Water: 60, H2_He: 25, Silicates: 15 },
     },
-    description: "The first confirmed exoplanet discovered by NASA's Kepler mission in the comfortable habitable zone of a sun-like star.",
+    description:
+      "The first confirmed exoplanet discovered by NASA's Kepler mission in the comfortable habitable zone of a sun-like star.",
     tags: ["exoplanet", "ocean world", "habitable zone"],
   },
   {
@@ -1138,7 +1224,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { CarbonLava: 50, SilicateLava: 30, Iron: 20 },
     },
-    description: "A super-hot, carbon-rich lava super-Earth with molten oceans on its dayside and possible diamond interior mantle.",
+    description:
+      "A super-hot, carbon-rich lava super-Earth with molten oceans on its dayside and possible diamond interior mantle.",
     tags: ["exoplanet", "lava world", "diamond planet", "super-earth"],
   },
   {
@@ -1162,7 +1249,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: true,
       composition: { SilicateClouds: 40, H2: 50, Methane: 10 },
     },
-    description: "A cobalt-blue hot Jupiter where supersonic 8,700 km/h winds blow sideways showers of molten silicate glass.",
+    description:
+      "A cobalt-blue hot Jupiter where supersonic 8,700 km/h winds blow sideways showers of molten silicate glass.",
     tags: ["exoplanet", "hot jupiter", "glass rain", "cobalt blue"],
   },
   {
@@ -1186,7 +1274,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: true,
       composition: { IronVapor: 30, H2: 60, Helium: 10 },
     },
-    description: "An ultra-hot gas giant with dayside temperatures exceeding 2400°C where vaporized iron condenses into nightside iron rain.",
+    description:
+      "An ultra-hot gas giant with dayside temperatures exceeding 2400°C where vaporized iron condenses into nightside iron rain.",
     tags: ["exoplanet", "ultra-hot jupiter", "iron rain"],
   },
   {
@@ -1210,7 +1299,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { H2_He: 50, Methane: 25, CO2: 20, WaterVapor: 5 },
     },
-    description: "A candidate Hycean sub-Neptune exoplanet with detected atmospheric methane and carbon dioxide in its habitable zone.",
+    description:
+      "A candidate Hycean sub-Neptune exoplanet with detected atmospheric methane and carbon dioxide in its habitable zone.",
     tags: ["exoplanet", "hycean", "habitable zone", "sub-neptune"],
   },
   {
@@ -1234,7 +1324,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { HeavyMetals: 80, Silicates: 20 },
     },
-    description: "A zombie super-Earth orbiting a rapidly spinning pulsar, bathed in lethal relativistic magnetic particle beams.",
+    description:
+      "A zombie super-Earth orbiting a rapidly spinning pulsar, bathed in lethal relativistic magnetic particle beams.",
     tags: ["exoplanet", "pulsar planet", "extreme", "zombie world"],
   },
   {
@@ -1306,7 +1397,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 68, Helium: 30, Other: 2 },
     },
-    description: "A super-luminous blue supergiant star outshining our Sun by 120,000 times, lighting up the Orion region.",
+    description:
+      "A super-luminous blue supergiant star outshining our Sun by 120,000 times, lighting up the Orion region.",
     tags: ["star", "blue supergiant", "orion"],
   },
   {
@@ -1330,7 +1422,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 60, Helium: 38, Other: 2 },
     },
-    description: "A gigantic, pulsating red supergiant in Orion's shoulder destined to explode as a dramatic supernova.",
+    description:
+      "A gigantic, pulsating red supergiant in Orion's shoulder destined to explode as a dramatic supernova.",
     tags: ["star", "red supergiant", "supernova candidate"],
   },
   {
@@ -1354,7 +1447,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 62, Helium: 36, Other: 2 },
     },
-    description: "The fiery red heart of Scorpius — an immense red supergiant star over 600 times the diameter of our Sun.",
+    description:
+      "The fiery red heart of Scorpius — an immense red supergiant star over 600 times the diameter of our Sun.",
     tags: ["star", "red supergiant", "scorpius"],
   },
   {
@@ -1402,7 +1496,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 70, Helium: 28, Metals: 2 },
     },
-    description: "The iconic northern navigation star — a classic Cepheid variable supergiant leading a triple star system.",
+    description:
+      "The iconic northern navigation star — a classic Cepheid variable supergiant leading a triple star system.",
     tags: ["star", "north star", "cepheid variable", "navigation"],
   },
   {
@@ -1426,7 +1521,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 55, Helium: 43, Other: 2 },
     },
-    description: "One of the largest known stars in the universe — a red hypergiant large enough to engulf Saturn's orbit.",
+    description:
+      "One of the largest known stars in the universe — a red hypergiant large enough to engulf Saturn's orbit.",
     tags: ["star", "hypergiant", "largest star"],
   },
   {
@@ -1450,7 +1546,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 60, Helium: 38, Metals: 2 },
     },
-    description: "The most massive known star in the universe (~200 solar masses), radiating with blinding Wolf-Rayet winds.",
+    description:
+      "The most massive known star in the universe (~200 solar masses), radiating with blinding Wolf-Rayet winds.",
     tags: ["star", "most massive", "wolf-rayet"],
   },
   {
@@ -1474,7 +1571,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Neutrons: 95, SuperconductingProtons: 5 },
     },
-    description: "A super-dense neutron star spinning 30 times per second, emitting flashing lighthouse beams of gamma and X-rays.",
+    description:
+      "A super-dense neutron star spinning 30 times per second, emitting flashing lighthouse beams of gamma and X-rays.",
     tags: ["pulsar", "neutron star", "supernova remnant"],
   },
   {
@@ -1498,7 +1596,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { DegenerateMatter: 100 },
     },
-    description: "An ultra-magnetic neutron star with magnetic fields a quadrillion times stronger than Earth, producing colossal starquakes.",
+    description:
+      "An ultra-magnetic neutron star with magnetic fields a quadrillion times stronger than Earth, producing colossal starquakes.",
     tags: ["magnetar", "neutron star", "extreme magnetism"],
   },
   {
@@ -1522,7 +1621,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Singularity: 100 },
     },
-    description: "The first widely accepted stellar-mass black hole, violently feeding from its blue supergiant companion star.",
+    description:
+      "The first widely accepted stellar-mass black hole, violently feeding from its blue supergiant companion star.",
     tags: ["black hole", "stellar mass", "x-ray binary"],
   },
   {
@@ -1618,7 +1718,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Hydrogen: 88, Dust: 12 },
     },
-    description: "A colossal, bright diffuse nebula housing the unstable hypergiant star system Eta Carinae and the Mystic Mountain.",
+    description:
+      "A colossal, bright diffuse nebula housing the unstable hypergiant star system Eta Carinae and the Mystic Mountain.",
     tags: ["nebula", "starburst", "eta carinae"],
   },
   {
@@ -1642,7 +1743,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { IonizedGas: 90, SynchrotronPlasma: 10 },
     },
-    description: "The glowing expanding debris shell of a supernova witnessed by Earth astronomers in the year 1054 CE.",
+    description:
+      "The glowing expanding debris shell of a supernova witnessed by Earth astronomers in the year 1054 CE.",
     tags: ["nebula", "supernova remnant", "messier 1"],
   },
   {
@@ -1790,7 +1892,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "Our majestic neighboring spiral galaxy spanning one trillion stars, on collision course with the Milky Way in 4.5B years.",
+    description:
+      "Our majestic neighboring spiral galaxy spanning one trillion stars, on collision course with the Milky Way in 4.5B years.",
     tags: ["galaxy", "local group", "spiral"],
   },
   {
@@ -1886,7 +1989,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "An unbarred spiral galaxy featuring an exceptionally bright bulbous core and a prominent dark dust absorption rim.",
+    description:
+      "An unbarred spiral galaxy featuring an exceptionally bright bulbous core and a prominent dark dust absorption rim.",
     tags: ["galaxy", "sombrero", "messier 104"],
   },
   {
@@ -1910,7 +2014,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "A classic grand-design spiral galaxy actively interacting and merging with its companion galaxy NGC 5195.",
+    description:
+      "A classic grand-design spiral galaxy actively interacting and merging with its companion galaxy NGC 5195.",
     tags: ["galaxy", "grand design", "spiral", "messier 51"],
   },
   {
@@ -1934,7 +2039,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "A giant elliptical galaxy hosting the historic Event Horizon Telescope-imaged 6.5-billion-solar-mass black hole and a 5,000-ly relativistic plasma jet.",
+    description:
+      "A giant elliptical galaxy hosting the historic Event Horizon Telescope-imaged 6.5-billion-solar-mass black hole and a 5,000-ly relativistic plasma jet.",
     tags: ["galaxy", "elliptical", "m87", "supermassive black hole"],
   },
   {
@@ -1958,7 +2064,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "A dramatic active radio galaxy crossed by a dense warped dust lane and shooting massive plasma jets into intergalactic space.",
+    description:
+      "A dramatic active radio galaxy crossed by a dense warped dust lane and shooting massive plasma jets into intergalactic space.",
     tags: ["galaxy", "radio galaxy", "active galaxy"],
   },
   {
@@ -1982,7 +2089,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "A rare, perfectly symmetrical ring galaxy with a luminous circle of young blue star clusters surrounding a golden nucleus.",
+    description:
+      "A rare, perfectly symmetrical ring galaxy with a luminous circle of young blue star clusters surrounding a golden nucleus.",
     tags: ["galaxy", "ring galaxy", "exotic galaxy"],
   },
 
@@ -2010,7 +2118,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Singularity: 100 },
     },
-    description: "An ultra-massive black hole of 66 billion solar masses powering a hyperluminous quasar that shines brighter than 140 trillion suns.",
+    description:
+      "An ultra-massive black hole of 66 billion solar masses powering a hyperluminous quasar that shines brighter than 140 trillion suns.",
     tags: ["quasar", "black hole", "ultra-massive", "brightest object"],
   },
   {
@@ -2034,7 +2143,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Singularity: 100 },
     },
-    description: "The first quasar ever identified in 1963, powered by a billion-solar-mass central engine shooting a 200,000-light-year plasma jet.",
+    description:
+      "The first quasar ever identified in 1963, powered by a billion-solar-mass central engine shooting a 200,000-light-year plasma jet.",
     tags: ["quasar", "first quasar", "active galactic nucleus"],
   },
   {
@@ -2082,7 +2192,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { GravitationalAnomaly: 100 },
     },
-    description: "An immense gravitational anomaly pulling millions of galaxies across hundreds of millions of light-years toward its mysterious center.",
+    description:
+      "An immense gravitational anomaly pulling millions of galaxies across hundreds of millions of light-years toward its mysterious center.",
     tags: ["great attractor", "gravitational anomaly", "structure"],
   },
   {
@@ -2106,7 +2217,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { NearVacuum: 100 },
     },
-    description: "A gigantic sphere of nearly empty space 330 million light-years across containing almost no galaxies.",
+    description:
+      "A gigantic sphere of nearly empty space 330 million light-years across containing almost no galaxies.",
     tags: ["void", "the great nothing", "structure"],
   },
   {
@@ -2130,7 +2242,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: 'The vast supercluster of 100,000 galaxies that contains the Milky Way — "immense heaven" in Hawaiian.',
+    description:
+      'The vast supercluster of 100,000 galaxies that contains the Milky Way — "immense heaven" in Hawaiian.',
     tags: ["supercluster", "structure", "laniakea"],
   },
   {
@@ -2154,7 +2267,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { Trace: 100 },
     },
-    description: "The immense filament-and-void scaffolding of dark matter along which every galaxy in existence is strung.",
+    description:
+      "The immense filament-and-void scaffolding of dark matter along which every galaxy in existence is strung.",
     tags: ["cosmic web", "structure", "universe scaffolding"],
   },
   {
@@ -2178,7 +2292,8 @@ export const CELESTIAL_BODIES = [
       isGasGiant: false,
       composition: { PrimordialPhotons: 100 },
     },
-    description: "The faint thermal afterglow of the Big Bang itself — the oldest and farthest light in the cosmos (13.8 billion years old).",
+    description:
+      "The faint thermal afterglow of the Big Bang itself — the oldest and farthest light in the cosmos (13.8 billion years old).",
     tags: ["cmb", "big bang", "structure", "edge of universe"],
   },
 ];

@@ -69,7 +69,8 @@ export const SATELLITES = [
     orbitsBodyId: "sun",
     distanceFromEarthKm: 130_000_000,
     colorHex: 0xffaa44,
-    description: "The fastest human-made craft ever built (700,000 km/h), repeatedly 'touching' the Sun's blistering corona.",
+    description:
+      "The fastest human-made craft ever built (700,000 km/h), repeatedly 'touching' the Sun's blistering corona.",
   },
   {
     id: "voyager-1",
@@ -108,7 +109,8 @@ export const SATELLITES = [
     orbitsBodyId: null,
     distanceFromEarthKm: 8_800_000_000,
     colorHex: 0xd7c8a8,
-    description: "The intrepid probe that unveiled the high-resolution glaciers, mountains, and heart of Pluto in 2015.",
+    description:
+      "The intrepid probe that unveiled the high-resolution glaciers, mountains, and heart of Pluto in 2015.",
   },
   {
     id: "cassini-huygens",
@@ -121,7 +123,8 @@ export const SATELLITES = [
     orbitsBodyId: "saturn",
     distanceFromEarthKm: 1_275_000_000,
     colorHex: 0xd4af37,
-    description: "Explored Saturn's rings, dropped the Huygens lander on Titan, and found Enceladus's cryovolcanic geysers.",
+    description:
+      "Explored Saturn's rings, dropped the Huygens lander on Titan, and found Enceladus's cryovolcanic geysers.",
   },
   {
     id: "juno",
@@ -134,7 +137,8 @@ export const SATELLITES = [
     orbitsBodyId: "jupiter",
     distanceFromEarthKm: 628_700_000,
     colorHex: 0xe09b55,
-    description: "Solar-powered spacecraft peeling back the deep cloud layers, storms, and magnetic dynamos of Jupiter.",
+    description:
+      "Solar-powered spacecraft peeling back the deep cloud layers, storms, and magnetic dynamos of Jupiter.",
   },
   {
     id: "kepler-telescope",
@@ -173,7 +177,8 @@ export const SATELLITES = [
     orbitsBodyId: null,
     distanceFromEarthKm: 260_000_000,
     colorHex: 0xff8a80,
-    description: "Unveiled the infrared universe, discovering planetary systems and imaging deep star-forming nurseries.",
+    description:
+      "Unveiled the infrared universe, discovering planetary systems and imaging deep star-forming nurseries.",
   },
   {
     id: "pioneer-10",
@@ -186,7 +191,8 @@ export const SATELLITES = [
     orbitsBodyId: null,
     distanceFromEarthKm: 19_500_000_000,
     colorHex: 0xc5cae9,
-    description: "The trailblazer carrying the iconic Pioneer plaque, bound toward the star Aldebaran over millions of years.",
+    description:
+      "The trailblazer carrying the iconic Pioneer plaque, bound toward the star Aldebaran over millions of years.",
   },
   {
     id: "rosetta",
@@ -212,7 +218,8 @@ export const SATELLITES = [
     orbitsBodyId: null,
     distanceFromEarthKm: 320_000_000,
     colorHex: 0xffee58,
-    description: "Successfully delivered pristine carbonaceous sample material from asteroid Bennu back to Earth in 2023.",
+    description:
+      "Successfully delivered pristine carbonaceous sample material from asteroid Bennu back to Earth in 2023.",
   },
   {
     id: "hayabusa2",
@@ -225,7 +232,8 @@ export const SATELLITES = [
     orbitsBodyId: null,
     distanceFromEarthKm: 280_000_000,
     colorHex: 0xff7043,
-    description: "Fired kinetic impactors and returned pristine organic and water-bearing fragments from asteroid Ryugu.",
+    description:
+      "Fired kinetic impactors and returned pristine organic and water-bearing fragments from asteroid Ryugu.",
   },
   {
     id: "chandrayaan-3",
@@ -251,7 +259,8 @@ export const SATELLITES = [
     orbitsBodyId: "mars",
     distanceFromEarthKm: 78_300_000,
     colorHex: 0xef5350,
-    description: "China's comprehensive maiden Mars mission, deploying an orbiter, lander, and subterranean radar rover.",
+    description:
+      "China's comprehensive maiden Mars mission, deploying an orbiter, lander, and subterranean radar rover.",
   },
   {
     id: "solar-orbiter",
@@ -264,7 +273,8 @@ export const SATELLITES = [
     orbitsBodyId: "sun",
     distanceFromEarthKm: 95_000_000,
     colorHex: 0xffb74d,
-    description: "Capturing the closest-ever photographs of the Sun and unprecedented views of its uncharted north and south poles.",
+    description:
+      "Capturing the closest-ever photographs of the Sun and unprecedented views of its uncharted north and south poles.",
   },
   {
     id: "psyche-probe",
@@ -277,7 +287,8 @@ export const SATELLITES = [
     orbitsBodyId: null,
     distanceFromEarthKm: 420_000_000,
     colorHex: 0x90a4ae,
-    description: "Equipped with Hall-effect thrusters to explore a unique world made largely of exposed nickel-iron metallic core material.",
+    description:
+      "Equipped with Hall-effect thrusters to explore a unique world made largely of exposed nickel-iron metallic core material.",
   },
 ];
 
@@ -295,7 +306,9 @@ export function getSatelliteById(id) {
  * @returns {SatelliteRecord[]}
  */
 export function searchSatellites(query, source = SATELLITES) {
-  const q = String(query ?? "").trim().toLowerCase();
+  const q = String(query ?? "")
+    .trim()
+    .toLowerCase();
   if (!q) return [];
   const nameMatches = [];
   const otherMatches = [];
