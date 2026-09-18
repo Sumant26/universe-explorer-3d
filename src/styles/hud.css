@@ -1077,3 +1077,327 @@
   background: var(--color-accent);
   color: #1a1410;
 }
+
+/* ==========================================================================
+   Atmospheric Spectrometer & Detail Additions
+   ========================================================================== */
+.spectrometer-container {
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  background: rgba(10, 8, 14, 0.45);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.spectrometer-band {
+  display: flex;
+  height: 18px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.spec-bar-seg {
+  height: 100%;
+  transition: width 0.4s ease;
+  position: relative;
+}
+
+.spec-bar-seg:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 12, 18, 0.95);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  border: 1px solid var(--color-panel-border);
+}
+
+.spectrometer-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.spec-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+}
+
+.gas-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.gas-name {
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.gas-pct {
+  font-weight: 700;
+  color: var(--color-text);
+  font-family: var(--font-mono, monospace);
+}
+
+/* ==========================================================================
+   Time-Warp Orbit Speed HUD
+   ========================================================================== */
+.time-warp-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(20, 16, 12, 0.65);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-panel-border);
+}
+
+.warp-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  margin-right: 0.3rem;
+  text-transform: uppercase;
+}
+
+.warp-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-panel-border);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.warp-btn:hover {
+  background: rgba(255, 176, 102, 0.15);
+  color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.warp-btn.active {
+  background: var(--color-accent);
+  color: #1a1410;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 10px rgba(255, 176, 102, 0.4);
+}
+
+/* ==========================================================================
+   Logbook Navigation Tabs & Guided Expeditions
+   ========================================================================== */
+.logbook-nav-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-panel-border);
+  padding: 0 1.5rem;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tab-btn {
+  padding: 0.75rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--color-text);
+}
+
+.tab-btn.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.expeditions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.2rem;
+  padding: 0.5rem 0;
+}
+
+.expedition-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.expedition-card:hover {
+  border-color: rgba(255, 176, 102, 0.4);
+  transform: translateY(-2px);
+}
+
+.expedition-card.completed {
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.expedition-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.expedition-badge {
+  font-size: 1.8rem;
+}
+
+.expedition-title-group h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.expedition-subtitle {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.expedition-desc {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.expedition-waypoints-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-soft);
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.expedition-waypoints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.expedition-waypoint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.55rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.expedition-waypoint.visited {
+  border-color: rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+.waypoint-status {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.expedition-waypoint.visited .waypoint-status {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.expedition-card-footer {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.expedition-start-btn {
+  padding: 0.45rem 1rem;
+  background: rgba(255, 176, 102, 0.15);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent-soft);
+  font-weight: 700;
+  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.expedition-start-btn:hover {
+  background: var(--color-accent);
+  color: #1a1410;
+}
+
+.expedition-status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.expedition-status-badge.completed {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+}
+
+.expedition-status-badge.in-progress {
+  background: rgba(255, 176, 102, 0.2);
+  color: var(--color-accent-soft);
+}
+
+/* ==========================================================================
+   Postcard Photo Button
+   ========================================================================== */
+.photo-btn-postcard {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #62e8ff, #3b82f6);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #0b1329;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(98, 232, 255, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.photo-btn-postcard:hover {
+  transform: scale(1.03);
+}

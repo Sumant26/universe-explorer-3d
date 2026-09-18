@@ -77,6 +77,7 @@ export class PhotoMode {
 
           <div class="photo-actions">
             <button type="button" id="photo-snap-btn" class="photo-btn-primary">📸 Capture Snapshot</button>
+            <button type="button" id="photo-postcard-btn" class="photo-btn-postcard">💌 Travel Postcard</button>
             <button type="button" id="photo-close-btn" class="photo-btn-secondary">✕ Exit</button>
           </div>
         </div>
@@ -88,6 +89,7 @@ export class PhotoMode {
     const fovSlider = this.root.querySelector("#photo-fov-slider");
     const fovVal = this.root.querySelector("#photo-fov-val");
     const snapBtn = this.root.querySelector("#photo-snap-btn");
+    const postcardBtn = this.root.querySelector("#photo-postcard-btn");
     const closeBtn = this.root.querySelector("#photo-close-btn");
     const filterBtns = this.root.querySelectorAll(".photo-filter-btn");
 
@@ -110,6 +112,7 @@ export class PhotoMode {
     });
 
     snapBtn?.addEventListener("click", () => this.capture());
+    postcardBtn?.addEventListener("click", () => this.exportPostcard());
     closeBtn?.addEventListener("click", () => this.close());
   }
 
@@ -135,6 +138,63 @@ export class PhotoMode {
     } catch (err) {
       console.warn("[PhotoMode] Capture failed:", err);
       this.onShowToast?.("Couldn't save snapshot directly.");
+    }
+  }
+
+  exportPostcard() {
+    if (!this.canvas) return;
+    try {
+      const state = this.store.getState();
+      const destName = state.selectedObject ? state.selectedObject.toUpperCase() : "COSMOS CABIN";
+
+      const card = document.createElement("canvas");
+      const w = 1280;
+      const h = 720;
+      card.width = w;
+      card.height = h;
+      const ctx = card.getContext("2d");
+
+      // Draw photo in center with cream Polaroid/Postcard border
+      ctx.fillStyle = "#1b1715";
+      ctx.fillRect(0, 0, w, h);
+
+      // Draw 3D scene snapshot
+      ctx.drawImage(this.canvas, 40, 40, w - 80, h - 140);
+
+      // Vintage card border frame
+      ctx.strokeStyle = "#d4a359";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(30, 30, w - 60, h - 60);
+
+      // Postcard Header & Stamp
+      ctx.fillStyle = "#ffb854";
+      ctx.font = "bold 28px sans-serif";
+      ctx.fillText(`★ GREETINGS FROM ${destName} ★`, 60, h - 55);
+
+      ctx.fillStyle = "#ffffff99";
+      ctx.font = "16px monospace";
+      ctx.fillText(`COSMOS CABIN EXPEDITION • ${new Date().toLocaleDateString()}`, 60, h - 30);
+
+      // Postal stamp box
+      ctx.strokeStyle = "#d4a35988";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(w - 180, h - 95, 130, 55);
+      ctx.fillStyle = "#d4a359";
+      ctx.font = "12px monospace";
+      ctx.fillText("INTERSTELLAR", w - 165, h - 70);
+      ctx.fillText("POSTAGE PAID", w - 165, h - 50);
+
+      const dataUrl = card.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.download = `cosmos-cabin-postcard-${destName.toLowerCase()}-${Date.now()}.png`;
+      a.href = dataUrl;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.onShowToast?.("💌 Vintage travel postcard generated & downloaded!");
+    } catch (err) {
+      console.warn("[PhotoMode] Postcard generation failed:", err);
+      this.onShowToast?.("Couldn't generate postcard.");
     }
   }
 

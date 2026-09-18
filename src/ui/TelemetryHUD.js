@@ -46,6 +46,13 @@ export class TelemetryHUD {
           <div class="telemetry-item"><span class="label">ETA</span><span class="value" data-field="eta">—</span></div>
           <div class="telemetry-item"><span class="label">Ship time</span><span class="value" data-field="ship-time">0s</span></div>
           <div class="telemetry-item"><span class="label">Earth time</span><span class="value" data-field="earth-time">0s</span></div>
+          <div class="time-warp-controls" role="group" aria-label="Orbital Time Warp">
+            <span class="warp-label">Time:</span>
+            <button type="button" class="warp-btn active" data-warp="1">1×</button>
+            <button type="button" class="warp-btn" data-warp="100">100×</button>
+            <button type="button" class="warp-btn" data-warp="1000">1k×</button>
+            <button type="button" class="warp-btn" data-warp="10000">10k×</button>
+          </div>
           <div class="zoom-controls" role="group" aria-label="Camera Zoom">
             <button type="button" class="zoom-btn" data-action="zoom-in" title="Zoom In (+)">+</button>
             <button type="button" class="zoom-btn" data-action="zoom-out" title="Zoom Out (-)">−</button>
@@ -60,10 +67,19 @@ export class TelemetryHUD {
       earthTime: this.root.querySelector('[data-field="earth-time"]'),
       driveStatus: this.root.querySelector('[data-field="drive-status"]'),
       driveBadge: this.root.querySelector(".drive-status-badge"),
+      warpButtons: this.root.querySelectorAll(".warp-btn"),
     };
 
     this._els.driveBadge?.addEventListener("click", () => {
       this._onToggleHyperdrive();
+    });
+
+    this.root.querySelectorAll(".warp-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const factor = Number(btn.getAttribute("data-warp")) || 1;
+        this.store.dispatch({ type: "SET_TIME_WARP", payload: factor });
+        this.root.querySelectorAll(".warp-btn").forEach((b) => b.classList.toggle("active", b === btn));
+      });
     });
 
     this.root.querySelector('[data-action="zoom-in"]')?.addEventListener("click", () => {

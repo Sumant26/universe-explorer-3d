@@ -58,6 +58,18 @@ export function computeRotationAngle(timeSeconds, rotationPeriodSeconds) {
   return angle < 0 ? angle + 2 * Math.PI : angle;
 }
 
+/**
+ * Calculates accelerated simulation timestamp based on time-warp multiplier.
+ * @param {number} baseSeconds
+ * @param {number} [timeWarpFactor=1]
+ * @returns {number}
+ */
+export function computeTimeWarpedSeconds(baseSeconds, timeWarpFactor = 1) {
+  const base = safe(baseSeconds, 0);
+  const factor = Math.max(1, safe(timeWarpFactor, 1));
+  return base * factor;
+}
+
 function clamp(v, min, max) {
   return Math.min(Math.max(v, min), max);
 }

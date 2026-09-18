@@ -11,11 +11,10 @@ describe("SpaceRadio", () => {
 
   it("tunes between available stations", () => {
     const radio = new SpaceRadio();
-    radio.tuneNext();
-    expect(radio.getCurrentStation().id).toBe(RADIO_STATIONS[1].id);
-
-    radio.tuneNext();
-    expect(radio.getCurrentStation().id).toBe(RADIO_STATIONS[2].id);
+    for (let i = 1; i < RADIO_STATIONS.length; i++) {
+      radio.tuneNext();
+      expect(radio.getCurrentStation().id).toBe(RADIO_STATIONS[i].id);
+    }
 
     // Wraps around
     radio.tuneNext();

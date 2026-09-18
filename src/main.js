@@ -96,13 +96,23 @@ async function bootstrap() {
   const { celestialGroups, satelliteGroups } = buildUniverse(engine);
 
   setBootMessage("Warming up the engines…", 75);
-  const { ship, update: updateShip, bobbleheadPhysics } = buildSpaceship();
+  const { ship, update: updateShip, bobbleheadPhysics, applyCabinTheme, applyCabinLighting } = buildSpaceship();
   engine.scene.add(ship);
   const earthPos = celestialGroups.get("earth")?.position ?? new THREE.Vector3();
   // Spawn in comfortable Earth orbit facing directly outward into deep space
   ship.position.copy(earthPos).add(new THREE.Vector3(0, 0.25, 2.5));
   ship.userData.forward = new THREE.Vector3(0, 0, 1);
   ship.userData.velocity = { x: 0, y: 0, z: 0 };
+
+  // Cabin Theme & Lighting Level subscriptions
+  store.subscribe(
+    (theme) => applyCabinTheme?.(theme),
+    (s) => s.cabinTheme
+  );
+  store.subscribe(
+    (level) => applyCabinLighting?.(level),
+    (s) => s.cabinLightLevel
+  );
 
   const flightCamera = new FlightCamera(engine.camera, ship);
   const warpController = new WarpController({ scene: engine.scene, ship, store });
@@ -186,6 +196,49 @@ async function bootstrap() {
     spaceRadio
   );
 
+  // URL Hash Deep Linking & Sync
+  function syncUrlHash() {
+    const s = store.getState();
+    const params = new window.URLSearchParams();
+    if (s.targetObject) params.set("dest", s.targetObject);
+    if (s.cameraMode) params.set("cam", s.cameraMode);
+    if (s.timeWarp && s.timeWarp !== 1) params.set("time", s.timeWarp);
+    if (s.cabinTheme && s.cabinTheme !== "MAHOGANY") params.set("theme", s.cabinTheme);
+    const hash = params.toString();
+    if (hash) {
+      window.history.replaceState(null, "", `#${hash}`);
+    }
+  }
+
+  function readUrlHash() {
+    if (!window.location.hash) return;
+    const params = new window.URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const dest = params.get("dest");
+    const cam = params.get("cam");
+    const time = params.get("time");
+    const theme = params.get("theme");
+
+    if (dest) {
+      setTimeout(() => handleTargetSelected(dest, getSatelliteById(dest) ? "satellite" : "planet"), 500);
+    }
+    if (cam && Object.values(CameraMode).includes(cam)) {
+      store.dispatch(Actions.setCameraMode(cam));
+    }
+    if (time && [1, 100, 1000, 10000].includes(Number(time))) {
+      store.dispatch(Actions.setTimeWarp(Number(time)));
+    }
+    if (theme && ["MAHOGANY", "APOLLO", "CYBERPUNK"].includes(theme.toUpperCase())) {
+      store.dispatch(Actions.setCabinTheme(theme.toUpperCase()));
+    }
+  }
+
+  store.subscribe(
+    () => syncUrlHash(),
+    (s) => `${s.targetObject}-${s.cameraMode}-${s.timeWarp}-${s.cabinTheme}`
+  );
+
+  readUrlHash();
+
   function handleTargetSelected(id, kind) {
     const targetGroup = kind === "satellite" ? satelliteGroups.get(id) : celestialGroups.get(id);
     const position = targetGroup?.position;
@@ -244,11 +297,46 @@ async function bootstrap() {
     const category = body?.system ?? sat?.missionType ?? "Exploration";
 
     store.dispatch(Actions.recordDiscovery({ id, name, kind, category }));
+
+    // Guided Expeditions waypoint progress & badge reward
+    const activeExp = store.getState().activeExpedition;
+    if (activeExp) {
+      store.dispatch(Actions.visitExpeditionWaypoint(activeExp, id));
+      const updatedProgress = store.getState().expeditionProgress[activeExp];
+      if (updatedProgress?.completed) {
+        showToast("🏆 Expedition Completed! New badge added to your Star Journal.");
+        audio.playChirp();
+      }
+    }
   }
 
-  engine.onTick((dt, elapsed) => {
-    updateOrbits(elapsed, celestialGroups, satelliteGroups);
-    warpController.update(dt, elapsed);
+  let accumulatedOrbitSeconds = 0;
+
+  engine.onTick((dt, _elapsed) => {
+    const timeWarp = store.getState().timeWarp || 1;
+    accumulatedOrbitSeconds += dt * timeWarp;
+
+    updateOrbits(accumulatedOrbitSeconds, celestialGroups, satelliteGroups);
+    warpController.update(dt, accumulatedOrbitSeconds);
+
+    // Planetary proximity sonification
+    if (spaceRadio && spaceRadio.isPlaying) {
+      let closestBodyId = null;
+      let minDistanceKm = Infinity;
+      for (const [id, group] of celestialGroups) {
+        const distUnits = ship.position.distanceTo(group.position);
+        const distKm = distUnits * 40000;
+        if (distKm < minDistanceKm) {
+          minDistanceKm = distKm;
+          closestBodyId = id;
+        }
+      }
+      if (closestBodyId && minDistanceKm < 800000) {
+        spaceRadio.updatePlanetarySonification(closestBodyId, minDistanceKm);
+      } else {
+        spaceRadio.updatePlanetarySonification(null, Infinity);
+      }
+    }
 
     let currentInput = { thrust: 0, yaw: 0, pitch: 0, strafe: 0, boost: false };
     let isBoosting;
@@ -342,7 +430,7 @@ async function bootstrap() {
     }
 
     // Dynamic Gravitational Time Dilation near Sagittarius A*
-    const sagA = celestialGroups.get("sagittarius-a");
+    const sagA = celestialGroups.get("sagittarius-a-star");
     if (sagA) {
       const distToSagA = ship.position.distanceTo(sagA.position);
       if (distToSagA < 8.0) {

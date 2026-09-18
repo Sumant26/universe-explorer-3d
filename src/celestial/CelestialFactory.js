@@ -178,6 +178,30 @@ function buildRockyBody(body) {
     group.add(atmosphereMesh);
   }
 
+  // Polar Aurora Ribbons for Earth, Jupiter, and Saturn
+  if (body.id === "earth" || body.id === "jupiter" || body.id === "saturn") {
+    const auroraColor = body.id === "earth" ? 0x55ffaa : body.id === "jupiter" ? 0x88e0ff : 0xaa88ff;
+    const auroraMat = new THREE.MeshBasicMaterial({
+      color: auroraColor,
+      transparent: true,
+      opacity: 0.65,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const auroraGeom = new THREE.TorusGeometry(radius * 0.35, radius * 0.04, 8, 32);
+    auroraGeom.rotateX(Math.PI / 2);
+
+    const northAurora = new THREE.Mesh(auroraGeom, auroraMat);
+    northAurora.position.y = radius * 0.94;
+    northAurora.name = `aurora-north:${body.id}`;
+
+    const southAurora = new THREE.Mesh(auroraGeom, auroraMat);
+    southAurora.position.y = -radius * 0.94;
+    southAurora.name = `aurora-south:${body.id}`;
+
+    group.add(northAurora, southAurora);
+  }
+
   return group;
 }
 

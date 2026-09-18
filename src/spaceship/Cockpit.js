@@ -259,6 +259,33 @@ export function buildSpaceship() {
     }
   }
 
+  function applyCabinTheme(themeName) {
+    const dashBase = cockpitInterior.children.find((c) => c.geometry?.type === "BoxGeometry");
+    if (!dashBase) return;
+    if (themeName === "APOLLO") {
+      dashBase.material.color.setHex(0xd0d4dc);
+      dashBase.material.roughness = 0.4;
+      dashBase.material.metalness = 0.4;
+    } else if (themeName === "CYBERPUNK") {
+      dashBase.material.color.setHex(0x151226);
+      dashBase.material.roughness = 0.2;
+      dashBase.material.metalness = 0.8;
+    } else {
+      // MAHOGANY default
+      dashBase.material.color.setHex(COZY_PALETTE.warmWood);
+      dashBase.material.roughness = 0.7;
+      dashBase.material.metalness = 0.1;
+    }
+  }
+
+  function applyCabinLighting(level) {
+    const lampLight = cockpitInterior.getObjectByName("cabin-lamp-light");
+    const warmCabinLight = cockpitInterior.children.find((c) => c.isPointLight && c.position.y > 0.1);
+    const clamped = Math.min(Math.max(level, 0), 1);
+    if (lampLight) lampLight.intensity = clamped * 1.4;
+    if (warmCabinLight) warmCabinLight.intensity = clamped * 0.65;
+  }
+
   return {
     ship,
     cockpitInterior,
@@ -269,6 +296,8 @@ export function buildSpaceship() {
     thrusterPlumes,
     flightStick,
     holoGlobe,
+    applyCabinTheme,
+    applyCabinLighting,
     update,
   };
 }
@@ -546,11 +575,13 @@ function buildCozyCockpitInterior() {
 
   // 7. Steaming Ceramic Coffee / Tea Mug in Dash Cupholder
   const mugGroup = new THREE.Group();
+  mugGroup.name = "coffee-mug";
   mugGroup.position.set(0.3, -0.07, 0.02);
 
   const holderRing = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.034, 0.03, 12), brassMat);
   const ceramicMat = new THREE.MeshStandardMaterial({ color: COZY_PALETTE.terracotta, roughness: 0.4 });
   const mugBody = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.024, 0.06, 12), ceramicMat);
+  mugBody.name = "coffee-mug-body";
   mugBody.position.y = 0.025;
 
   const coffeeSurface = new THREE.Mesh(

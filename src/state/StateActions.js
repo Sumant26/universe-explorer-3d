@@ -29,6 +29,14 @@ export const ActionTypes = Object.freeze({
   PUSH_HISTORY: "PUSH_HISTORY",
   REPORT_ERROR: "REPORT_ERROR",
   CLEAR_ERROR: "CLEAR_ERROR",
+  SET_CABIN_THEME: "SET_CABIN_THEME",
+  SET_CABIN_LIGHT_LEVEL: "SET_CABIN_LIGHT_LEVEL",
+  SET_TIME_WARP: "SET_TIME_WARP",
+  SET_RADIO_STATION: "SET_RADIO_STATION",
+  START_EXPEDITION: "START_EXPEDITION",
+  ADVANCE_EXPEDITION: "ADVANCE_EXPEDITION",
+  CANCEL_EXPEDITION: "CANCEL_EXPEDITION",
+  COMPLETE_EXPEDITION: "COMPLETE_EXPEDITION",
 });
 
 /** Flight status values. @enum {string} */
@@ -53,6 +61,13 @@ export const CameraMode = Object.freeze({
   THIRD_PERSON: "THIRD_PERSON",
   CINEMATIC: "CINEMATIC",
   PHOTO: "PHOTO",
+});
+
+/** Cabin interior styling themes. @enum {string} */
+export const CabinTheme = Object.freeze({
+  MAHOGANY: "MAHOGANY",
+  APOLLO: "APOLLO",
+  CYBERPUNK: "CYBERPUNK",
 });
 
 function assertString(value, name) {
@@ -107,4 +122,32 @@ export const Actions = {
     payload: { message: error?.message ?? String(error), at: Date.now() },
   }),
   clearError: () => ({ type: ActionTypes.CLEAR_ERROR }),
+  setCabinTheme: (theme) => {
+    if (!Object.values(CabinTheme).includes(theme)) {
+      throw new RangeError(`Unknown cabin theme: ${theme}`);
+    }
+    return { type: ActionTypes.SET_CABIN_THEME, payload: theme };
+  },
+  setCabinLightLevel: (level) => ({
+    type: ActionTypes.SET_CABIN_LIGHT_LEVEL,
+    payload: Math.min(Math.max(Number(level) || 0, 0), 1),
+  }),
+  setTimeWarp: (factor) => ({
+    type: ActionTypes.SET_TIME_WARP,
+    payload: Math.max(1, Number(factor) || 1),
+  }),
+  setRadioStation: (stationIndex) => ({
+    type: ActionTypes.SET_RADIO_STATION,
+    payload: Number(stationIndex) || 0,
+  }),
+  startExpedition: (expeditionId) => {
+    assertString(expeditionId, "expedition id");
+    return { type: ActionTypes.START_EXPEDITION, payload: expeditionId };
+  },
+  advanceExpedition: () => ({ type: ActionTypes.ADVANCE_EXPEDITION }),
+  cancelExpedition: () => ({ type: ActionTypes.CANCEL_EXPEDITION }),
+  completeExpedition: (expeditionId, badge) => ({
+    type: ActionTypes.COMPLETE_EXPEDITION,
+    payload: { expeditionId, badge, completedAt: Date.now() },
+  }),
 };

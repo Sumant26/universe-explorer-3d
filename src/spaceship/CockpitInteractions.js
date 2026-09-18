@@ -81,6 +81,10 @@ export class CockpitInteractions {
           this.tapBobblehead();
           return true;
         }
+        if (obj.name === "coffee-mug" || obj.name === "coffee-mug-body") {
+          this.tapCoffeeMug();
+          return true;
+        }
         if (obj.name === "palette-switch") {
           this.cycleTheme();
           return true;
@@ -90,6 +94,11 @@ export class CockpitInteractions {
     }
 
     return false;
+  }
+
+  tapCoffeeMug() {
+    this.audio?.playChirp();
+    this.onShowToast?.("☕ Hot space roast coffee — cozy and warm!");
   }
 
   toggleCabinLight() {

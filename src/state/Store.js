@@ -11,7 +11,7 @@
  *    every transition unit-testable without touching Three.js or the DOM.
  */
 
-import { ActionTypes, FlightStatus, FlightMode, CameraMode } from "./StateActions.js";
+import { ActionTypes, FlightStatus, FlightMode, CameraMode, CabinTheme } from "./StateActions.js";
 
 /** @returns {object} A fresh copy of the initial application state. */
 export function createInitialState() {
@@ -22,6 +22,12 @@ export function createInitialState() {
     flightStatus: FlightStatus.IDLE,
     flightMode: FlightMode.MANUAL,
     cameraMode: CameraMode.THIRD_PERSON,
+    cabinTheme: CabinTheme.MAHOGANY,
+    cabinLightLevel: 1.0,
+    timeWarp: 1,
+    radioStationIndex: 0,
+    activeExpedition: null,
+    completedExpeditions: [],
     flightTelemetry: {
       currentSpeedC: 0,
       lorentzFactor: 1,
@@ -171,6 +177,49 @@ export function reducer(state, action) {
 
     case ActionTypes.CLEAR_ERROR:
       return { ...state, lastError: null };
+
+    case ActionTypes.SET_CABIN_THEME:
+      return { ...state, cabinTheme: action.payload };
+
+    case ActionTypes.SET_CABIN_LIGHT_LEVEL:
+      return { ...state, cabinLightLevel: action.payload };
+
+    case ActionTypes.SET_TIME_WARP:
+      return { ...state, timeWarp: action.payload };
+
+    case ActionTypes.SET_RADIO_STATION:
+      return { ...state, radioStationIndex: action.payload };
+
+    case ActionTypes.START_EXPEDITION:
+      return {
+        ...state,
+        activeExpedition: { id: action.payload, currentStepIndex: 0, startedAt: Date.now() },
+      };
+
+    case ActionTypes.ADVANCE_EXPEDITION:
+      if (!state.activeExpedition) return state;
+      return {
+        ...state,
+        activeExpedition: {
+          ...state.activeExpedition,
+          currentStepIndex: state.activeExpedition.currentStepIndex + 1,
+        },
+      };
+
+    case ActionTypes.CANCEL_EXPEDITION:
+      return { ...state, activeExpedition: null };
+
+    case ActionTypes.COMPLETE_EXPEDITION: {
+      const { expeditionId, badge, completedAt } = action.payload;
+      const alreadyCompleted = state.completedExpeditions.some((c) => c.expeditionId === expeditionId);
+      return {
+        ...state,
+        activeExpedition: null,
+        completedExpeditions: alreadyCompleted
+          ? state.completedExpeditions
+          : [...state.completedExpeditions, { expeditionId, badge, completedAt }],
+      };
+    }
 
     default:
       return state;

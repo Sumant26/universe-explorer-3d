@@ -144,9 +144,38 @@ export class DetailPanel {
   /** @private */
   _renderAtmosphere(atmosphere) {
     if (atmosphere.length === 0) return '<span class="no-atmosphere">No meaningful atmosphere</span>';
-    return `<ul class="atmosphere-list">${atmosphere
-      .map((a) => `<li><span>${escapeHtml(a.gas)}</span><span>${a.percent}%</span></li>`)
-      .join("")}</ul>`;
+
+    const gasColors = {
+      N2: "#88ccff",
+      O2: "#55ffaa",
+      CO2: "#ffaa77",
+      H2O: "#44aaff",
+      CH4: "#ffdd44",
+      H2: "#dd99ff",
+      He: "#ffaacc",
+      Ar: "#99eebb",
+    };
+
+    const spectrumBars = atmosphere
+      .map((a) => {
+        const gasKey = a.gas.replace(/[^a-zA-Z0-9]/g, "");
+        const color = gasColors[gasKey] || "#ffd27a";
+        return `<div class="spec-bar-seg" style="width:${Math.max(a.percent, 3)}%;background:${color}" title="${escapeHtml(a.gas)}: ${a.percent}%"></div>`;
+      })
+      .join("");
+
+    return `
+      <div class="spectrometer-container">
+        <div class="spectrometer-band" title="Spectral Absorption Profile">${spectrumBars}</div>
+        <ul class="atmosphere-list">${atmosphere
+          .map((a) => {
+            const gasKey = a.gas.replace(/[^a-zA-Z0-9]/g, "");
+            const color = gasColors[gasKey] || "#ffd27a";
+            return `<li><span class="gas-bullet" style="color:${color}">■</span> <span>${escapeHtml(a.gas)}</span><span>${a.percent}%</span></li>`;
+          })
+          .join("")}</ul>
+      </div>
+    `;
   }
 
   /** @private */

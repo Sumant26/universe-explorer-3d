@@ -24,7 +24,13 @@ export const RADIO_STATIONS = [
     id: "pulsar-radio",
     name: "Station 3: Cosmic Frequencies",
     frequency: "107.9 FM",
-    genre: "Pulsar Rhythms & Solar Wind",
+    genre: "Pulsar Rhythms & Clicks",
+  },
+  {
+    id: "solar-wind",
+    name: "Station 4: Solar Wind Ambient",
+    frequency: "101.3 FM",
+    genre: "Modulated Plasma & Sweeps",
   },
 ];
 
@@ -154,7 +160,115 @@ export class SpaceRadio {
       this._startDeepSpaceDrone(ctx);
     } else if (station.id === "pulsar-radio") {
       this._startPulsarRadio(ctx);
+    } else if (station.id === "solar-wind") {
+      this._startSolarWind(ctx);
     }
+  }
+
+  _startSolarWind(ctx) {
+    // Modulated pink noise plasma buffer with resonant bandpass filter
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    let b0 = 0,
+      b1 = 0,
+      b2 = 0,
+      b3 = 0,
+      b4 = 0,
+      b5 = 0,
+      b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.969 * b2 + white * 0.153852;
+      b3 = 0.8665 * b3 + white * 0.3104856;
+      b4 = 0.55 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.016898;
+      output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+      b6 = white * 0.115926;
+    }
+
+    const whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(320, ctx.currentTime);
+    filter.Q.setValueAtTime(4.5, ctx.currentTime);
+
+    // LFO to sweep the solar wind frequency
+    const sweepLfo = ctx.createOscillator();
+    sweepLfo.type = "sine";
+    sweepLfo.frequency.setValueAtTime(0.15, ctx.currentTime);
+
+    const sweepGain = ctx.createGain();
+    sweepGain.gain.setValueAtTime(180, ctx.currentTime);
+    sweepLfo.connect(sweepGain);
+    sweepGain.connect(filter.frequency);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.045, ctx.currentTime);
+
+    whiteNoise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this._masterGain);
+
+    whiteNoise.start();
+    sweepLfo.start();
+    this._nodes.push(whiteNoise, filter, sweepLfo, sweepGain, gain);
+  }
+
+  /**
+   * Updates dynamic planetary sonification based on proximity to celestial bodies.
+   * Generates electromagnetic whistlers and magnetospheric resonances.
+   * @param {{id: string, name: string, kind?: string, atmosphere?: string}} [targetBody]
+   * @param {number} [distanceKm]
+   */
+  updatePlanetarySonification(targetBody, distanceKm = Infinity) {
+    if (!this._ctx || !this.isPlaying || !targetBody || distanceKm > 500000) {
+      if (this._planetaryGain && this._ctx) {
+        this._planetaryGain.gain.setTargetAtTime(0, this._ctx.currentTime, 0.2);
+      }
+      return;
+    }
+
+    const ctx = this._ctx;
+    if (!this._planetaryGain) {
+      this._planetaryGain = ctx.createGain();
+      this._planetaryGain.gain.value = 0;
+      this._planetaryGain.connect(ctx.destination);
+
+      this._planetaryOsc = ctx.createOscillator();
+      this._planetaryOsc.type = "sine";
+      this._planetaryOsc.frequency.value = 220;
+
+      this._planetaryFilter = ctx.createBiquadFilter();
+      this._planetaryFilter.type = "lowpass";
+      this._planetaryFilter.frequency.value = 400;
+
+      this._planetaryOsc.connect(this._planetaryFilter);
+      this._planetaryFilter.connect(this._planetaryGain);
+      this._planetaryOsc.start();
+    }
+
+    // Proximity factor (0 near 500,000km, 1 at 5,000km)
+    const proximity = Math.min(Math.max((500000 - distanceKm) / 495000, 0), 1);
+    const targetVol = proximity * 0.035 * this.volume;
+    this._planetaryGain.gain.setTargetAtTime(targetVol, ctx.currentTime, 0.1);
+
+    // Calculate base frequency from body signature
+    let baseFreq = 180;
+    if (targetBody.kind === "black_hole") baseFreq = 55;
+    else if (targetBody.kind === "star" || targetBody.id === "sun") baseFreq = 120;
+    else if (targetBody.id === "jupiter")
+      baseFreq = 340; // Jovian decametric radiation
+    else if (targetBody.id === "saturn")
+      baseFreq = 260; // Ring resonance
+    else if (targetBody.id === "earth") baseFreq = 440; // Earth auroral chorus
+
+    this._planetaryOsc.frequency.setTargetAtTime(baseFreq + Math.sin(ctx.currentTime * 1.5) * 15, ctx.currentTime, 0.1);
   }
 
   _startLofiStation(ctx) {

@@ -45,11 +45,19 @@ export function createAccretionDiskMaterial() {
       void main() {
         vec2 centered = vUv - 0.5;
         float radius = length(centered) * 2.0;
-        float angle = atan(centered.y, centered.x) + uTime * 0.6;
-        float swirl = sin(angle * 6.0 + radius * 10.0) * 0.5 + 0.5;
-        float ring = smoothstep(0.35, 0.5, radius) * (1.0 - smoothstep(0.9, 1.0, radius));
-        vec3 color = mix(vec3(1.0, 0.55, 0.2), vec3(1.0, 0.85, 0.6), swirl);
-        gl_FragColor = vec4(color, ring * (0.55 + swirl * 0.3));
+        float angle = atan(centered.y, centered.x) + uTime * 0.8;
+        float swirl = sin(angle * 6.0 + radius * 12.0) * 0.5 + 0.5;
+        float ring = smoothstep(0.32, 0.48, radius) * (1.0 - smoothstep(0.88, 1.0, radius));
+
+        // Relativistic Doppler beaming: approaching side (left / -x) is blueshifted & brighter,
+        // receding side (right / +x) is redshifted & dimmer
+        float dopplerFactor = clamp(-centered.x * 2.2 + 0.5, 0.2, 1.8);
+        vec3 blueShiftColor = vec3(0.5, 0.8, 1.4) * dopplerFactor;
+        vec3 redShiftColor = vec3(1.4, 0.35, 0.1) * (2.0 - dopplerFactor);
+        vec3 baseColor = mix(redShiftColor, blueShiftColor, clamp(-centered.x + 0.5, 0.0, 1.0));
+        vec3 finalColor = mix(baseColor, vec3(1.0, 0.95, 0.8), swirl * 0.5);
+
+        gl_FragColor = vec4(finalColor, ring * (0.6 + swirl * 0.4) * dopplerFactor);
       }
     `,
     transparent: true,
