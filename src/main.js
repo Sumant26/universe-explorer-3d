@@ -43,6 +43,22 @@ import { ProbeBuilderModal } from "./ui/ProbeBuilderModal.js";
 import { SurfaceLanderView } from "./celestial/SurfaceLanderView.js";
 import { CosmicEventsManager } from "./celestial/CosmicEventsManager.js";
 import { initHUDController } from "./ui/HUDController.js";
+import { SetiScanner } from "./audio/SetiScanner.js";
+import { SetiScannerModal } from "./ui/SetiScannerModal.js";
+import { HoloCompanion } from "./spaceship/HoloCompanion.js";
+import { ShipUpgrades } from "./physics/ShipUpgrades.js";
+import { EngineeringModal } from "./ui/EngineeringModal.js";
+import { WormholeFactory } from "./celestial/WormholeFactory.js";
+import { StarSystemGenesis } from "./celestial/StarSystemGenesis.js";
+import { SandboxGenesisModal } from "./ui/SandboxGenesisModal.js";
+import {
+  TOGGLE_SETI_SCANNER,
+  TOGGLE_AI_COMPANION,
+  TOGGLE_ENGINEERING_BAY,
+  TOGGLE_SANDBOX_MODE,
+  ENTER_WORMHOLE,
+  EXIT_WORMHOLE,
+} from "./state/StateActions.js";
 
 bootstrap().catch((err) => showFatalError(err));
 
@@ -105,6 +121,7 @@ async function bootstrap() {
   setBootMessage("Warming up the engines…", 75);
   const {
     ship,
+    cockpitInterior,
     update: updateShip,
     bobbleheadPhysics,
     applyCabinTheme,
@@ -117,6 +134,36 @@ async function bootstrap() {
   ship.position.copy(earthPos).add(new THREE.Vector3(0, 0.25, 2.5));
   ship.userData.forward = new THREE.Vector3(0, 0, 1);
   ship.userData.velocity = { x: 0, y: 0, z: 0 };
+
+  // AI Hologram Companion ("Astra")
+  const holoCompanion = new HoloCompanion(store);
+  holoCompanion.group.position.set(0.18, -0.04, -0.09);
+  if (cockpitInterior) {
+    cockpitInterior.add(holoCompanion.group);
+  } else {
+    ship.add(holoCompanion.group);
+  }
+
+  // Deep Space SETI Radio & Waterfall Spectrogram Scanner
+  const setiScanner = new SetiScanner(store);
+  const _setiModal = new SetiScannerModal(store, setiScanner);
+
+  // Ship Engineering Bay Subsystems
+  const _engineeringModal = new EngineeringModal(store);
+
+  // Star System Genesis Sandbox Mode
+  const starGenesis = new StarSystemGenesis(engine.scene, store);
+  const _sandboxModal = new SandboxGenesisModal(store, starGenesis);
+
+  // Spacetime Wormholes & Einstein-Rosen Warp Gate
+  const wormholeFactory = new WormholeFactory(engine.scene, store);
+  wormholeFactory.createWormhole({
+    name: "Einstein-Rosen Bridge Alpha",
+    position: new THREE.Vector3(25000, 500, -35000),
+    destinationName: "Andromeda Galaxy M31",
+    destinationCoords: new THREE.Vector3(-45000, 12000, 60000),
+    eventRadius: 600,
+  });
 
   // Cabin Theme, Lighting Level & Hull Livery subscriptions
   store.subscribe(
@@ -219,6 +266,7 @@ async function bootstrap() {
     audio,
     spaceRadio,
     cassetteDeck,
+    setiScanner,
     flightCamera,
     store,
     cockpitInteractions
@@ -325,6 +373,7 @@ async function bootstrap() {
     const category = body?.system ?? sat?.missionType ?? "Exploration";
 
     store.dispatch(Actions.recordDiscovery({ id, name, kind, category }));
+    holoCompanion.speakOnTarget(id);
 
     // Guided Expeditions waypoint progress & badge reward
     const activeExp = store.getState().activeExpedition;
@@ -382,6 +431,8 @@ async function bootstrap() {
     let maxReentryHeat = 0;
     let currentDrag = 0;
 
+    const activeModifiers = ShipUpgrades.computeActiveModifiers(store.getState().installedUpgrades || []);
+
     const shipPos = ship.position;
     for (const [bodyId, group] of celestialGroups) {
       const body = getCelestialBodyById(bodyId);
@@ -399,9 +450,28 @@ async function bootstrap() {
             (ship.userData.velocity?.z ?? 0) ** 2
         );
         const heat = calculateReentryHeating(shipSpeed, atmo.densityFraction, 12);
-        maxReentryHeat = Math.max(maxReentryHeat, heat.heatIntensity);
+        maxReentryHeat = Math.max(maxReentryHeat, heat.heatIntensity * activeModifiers.heatReduction);
         currentDrag = Math.max(currentDrag, heat.dragForce);
       }
+    }
+
+    // Tick AI companion, SETI scanner, star genesis sandbox, and wormholes
+    holoCompanion.tick(dt);
+    setiScanner.tick(dt);
+    starGenesis.tick(dt);
+    wormholeFactory.tick(dt);
+
+    // Spacetime Wormhole proximity detection
+    const whCheck = wormholeFactory.checkProximity(ship.position, 850);
+    if (whCheck.inRange && !store.getState().isTraversingWormhole) {
+      store.dispatch({ type: ENTER_WORMHOLE, payload: whCheck.wormhole.name });
+      showToast(`🌀 Entering ${whCheck.wormhole.name} -> Warping to ${whCheck.wormhole.destinationName}!`);
+      ship.position.copy(whCheck.wormhole.destinationCoords);
+      audio.playChirp();
+      setTimeout(() => {
+        store.dispatch({ type: EXIT_WORMHOLE });
+        showToast(`✨ Exited into ${whCheck.wormhole.destinationName}!`);
+      }, 1600);
     }
 
     if (!isWarping) {
@@ -706,6 +776,7 @@ function wireInputAndAudio(
   audio,
   spaceRadio,
   cassetteDeck,
+  setiScanner,
   flightCamera,
   store,
   cockpitInteractions
@@ -717,6 +788,9 @@ function wireInputAndAudio(
     }
     if (cassetteDeck && audio._ctx) {
       cassetteDeck.setContext(audio._ctx);
+    }
+    if (setiScanner && audio._ctx) {
+      setiScanner.setContext(audio._ctx);
     }
     window.removeEventListener("pointerdown", unlockAudio);
     window.removeEventListener("keydown", unlockAudio);
@@ -746,6 +820,14 @@ function wireInputAndAudio(
       store.dispatch(Actions.toggleLogbook(true));
     } else if (e.code === "KeyB") {
       store.dispatch(Actions.toggleProbeBuilder());
+    } else if (e.code === "KeyU") {
+      store.dispatch({ type: TOGGLE_SETI_SCANNER });
+    } else if (e.code === "KeyE") {
+      store.dispatch({ type: TOGGLE_ENGINEERING_BAY });
+    } else if (e.code === "KeyG") {
+      store.dispatch({ type: TOGGLE_SANDBOX_MODE });
+    } else if (e.code === "KeyH") {
+      store.dispatch({ type: TOGGLE_AI_COMPANION });
     } else if (e.code === "KeyK") {
       if (cassetteDeck) {
         const isPlaying = cassetteDeck.togglePlay();

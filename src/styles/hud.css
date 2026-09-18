@@ -1806,3 +1806,712 @@
   background: rgba(255, 176, 102, 0.2);
   border-color: var(--color-accent);
 }
+
+/* ==========================================================================
+   1. SETI SCANNER & SPECTROGRAM WATERFALL MODAL
+   ========================================================================== */
+.seti-modal-backdrop,
+.engineering-modal-backdrop,
+.sandbox-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 20, 0.75);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.seti-modal-backdrop.hidden,
+.engineering-modal-backdrop.hidden,
+.sandbox-modal-backdrop.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.seti-scanner-panel,
+.engineering-panel,
+.sandbox-panel {
+  background: rgba(16, 20, 36, 0.88);
+  border: 1px solid rgba(98, 232, 255, 0.25);
+  border-radius: 16px;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    0 0 32px rgba(98, 232, 255, 0.15);
+  color: #e2e8f0;
+  max-width: 900px;
+  width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.seti-header,
+.eng-header,
+.sandbox-header {
+  padding: 1.2rem 1.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.seti-header-left,
+.eng-header-left,
+.sandbox-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.seti-header-icon,
+.eng-header-icon,
+.sandbox-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 10px rgba(98, 232, 255, 0.5));
+}
+
+.seti-main-title,
+.eng-main-title,
+.sandbox-main-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #62e8ff;
+  text-shadow: 0 0 12px rgba(98, 232, 255, 0.4);
+}
+
+.seti-subtitle,
+.eng-subtitle,
+.sandbox-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.seti-close-btn,
+.eng-close-btn,
+.sandbox-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seti-close-btn:hover,
+.eng-close-btn:hover,
+.sandbox-close-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+}
+
+.seti-body {
+  padding: 1.4rem 1.6rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.seti-visualizer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: #090c14;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(98, 232, 255, 0.2);
+}
+
+.seti-vis-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #62e8ff;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.seti-vis-live {
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseDot 1s infinite alternate;
+}
+
+@keyframes pulseDot {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.seti-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #04060a;
+}
+
+.waterfall-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.waterfall-needle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ff5555;
+  box-shadow: 0 0 8px #ff5555;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.seti-tuner-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.seti-slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.seti-slider {
+  width: 100%;
+  accent-color: #62e8ff;
+  cursor: pointer;
+}
+
+.seti-signals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.signals-heading {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.signals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.8rem;
+}
+
+.seti-station-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.seti-station-card:hover,
+.seti-station-card.card-active {
+  background: rgba(98, 232, 255, 0.1);
+  border-color: rgba(98, 232, 255, 0.4);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.station-freq {
+  font-family: monospace;
+  font-weight: 700;
+  color: #ffb854;
+  font-size: 0.9rem;
+}
+
+.station-type {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(98, 232, 255, 0.15);
+  color: #62e8ff;
+  font-weight: 700;
+}
+
+.station-name {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #f1f5f9;
+}
+
+.station-desc {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.station-tune-btn {
+  padding: 0.35rem 0.6rem;
+  background: rgba(98, 232, 255, 0.2);
+  border: 1px solid #62e8ff;
+  color: #62e8ff;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.station-tune-btn:hover {
+  background: rgba(98, 232, 255, 0.35);
+}
+
+.seti-intercept-panel {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.intercept-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #10b981;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.intercept-icon {
+  font-size: 1.1rem;
+  animation: pulseDot 0.6s infinite alternate;
+}
+
+.intercept-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f8fafc;
+}
+
+.intercept-decode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.decode-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.decode-ticker {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #34d399;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.intercept-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.intercept-btn:hover {
+  transform: scale(1.02);
+}
+
+/* ==========================================================================
+   2. SPACESHIP ENGINEERING BAY MODAL
+   ========================================================================== */
+.eng-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.eng-points-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 184, 84, 0.15);
+  border: 1px solid #ffb854;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+}
+
+.eng-pts-label {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.eng-pts-value {
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffb854;
+}
+
+.eng-grid {
+  padding: 1.4rem 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+  overflow-y: auto;
+}
+
+.eng-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.eng-card:hover {
+  background: rgba(98, 232, 255, 0.06);
+  border-color: rgba(98, 232, 255, 0.3);
+}
+
+.eng-card.card-installed {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.eng-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.eng-icon {
+  font-size: 1.8rem;
+}
+
+.eng-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.eng-category {
+  font-size: 0.65rem;
+  color: #62e8ff;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.eng-name {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.eng-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.eng-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+}
+
+.eng-cost {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.eng-badge.installed {
+  padding: 0.3rem 0.6rem;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid #10b981;
+  color: #10b981;
+  font-weight: 700;
+  font-size: 0.7rem;
+  border-radius: 6px;
+}
+
+.eng-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.eng-btn.unlock {
+  background: linear-gradient(135deg, #62e8ff, #0284c7);
+  border: none;
+  color: #0b1329;
+  box-shadow: 0 2px 8px rgba(98, 232, 255, 0.3);
+}
+
+.eng-btn.unlock:hover {
+  transform: scale(1.03);
+}
+
+.eng-btn.locked {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   3. STAR SYSTEM GENESIS SANDBOX MODAL
+   ========================================================================== */
+.sandbox-body {
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  overflow-y: auto;
+}
+
+.sandbox-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.sandbox-section-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffb854;
+  letter-spacing: 0.05em;
+}
+
+.sandbox-control-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sandbox-label {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.sandbox-select {
+  background: #0f172a;
+  border: 1px solid rgba(98, 232, 255, 0.3);
+  color: #f1f5f9;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.sandbox-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.6rem;
+}
+
+.sandbox-metric {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sandbox-metric.highlight-green {
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.m-label {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.m-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.sandbox-slider {
+  width: 100%;
+  accent-color: #ffb854;
+}
+
+.sandbox-actions-row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.sandbox-btn {
+  padding: 0.55rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease;
+}
+
+.sandbox-btn:hover {
+  transform: scale(1.02);
+}
+
+.sandbox-btn.primary {
+  background: linear-gradient(135deg, #ffb854, #ea580c);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+.sandbox-btn.accent {
+  background: linear-gradient(135deg, #62e8ff, #0284c7);
+  color: #0b1329;
+  box-shadow: 0 4px 12px rgba(98, 232, 255, 0.3);
+}
+
+.sandbox-btn.danger {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.sandbox-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* ==========================================================================
+   4. HOLOGRAPHIC AI COMPANION (ASTRA) HUD OVERLAY
+   ========================================================================== */
+.holo-speech-overlay {
+  position: fixed;
+  bottom: 85px;
+  right: 28px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(98, 232, 255, 0.35);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(98, 232, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.8rem 1.1rem;
+  max-width: 320px;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  z-index: 1000;
+  animation: slideInUp 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.holo-speech-icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px #62e8ff);
+}
+
+.holo-speech-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.holo-speech-name {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #62e8ff;
+  letter-spacing: 0.08em;
+}
+
+.holo-speech-text {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: #f1f5f9;
+  line-height: 1.35;
+}

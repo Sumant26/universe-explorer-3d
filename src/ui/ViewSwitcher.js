@@ -53,6 +53,9 @@ export class ViewSwitcher {
           <button type="button" class="tool-btn" id="btn-toggle-photo" title="Open Photo Studio (P)">📷 Photo</button>
           <button type="button" class="tool-btn" id="btn-toggle-logbook" title="Expedition Journal (L)">📖 Journal</button>
           <button type="button" class="tool-btn" id="btn-toggle-radio" title="Space Radio (R)">📻 Radio</button>
+          <button type="button" class="tool-btn" id="btn-toggle-seti" title="SETI Waterfall Scanner (U)">📡 SETI</button>
+          <button type="button" class="tool-btn" id="btn-toggle-eng" title="Ship Engineering Bay (E)">🛠️ Upgrades</button>
+          <button type="button" class="tool-btn" id="btn-toggle-genesis" title="Star System Genesis (G)">🌟 Genesis</button>
         </div>
       </div>
     `;
@@ -77,6 +80,18 @@ export class ViewSwitcher {
 
     this.root.querySelector("#btn-toggle-radio")?.addEventListener("click", () => {
       this.onToggleRadio?.();
+    });
+
+    this.root.querySelector("#btn-toggle-seti")?.addEventListener("click", () => {
+      this.store.dispatch({ type: "TOGGLE_SETI_SCANNER" });
+    });
+
+    this.root.querySelector("#btn-toggle-eng")?.addEventListener("click", () => {
+      this.store.dispatch({ type: "TOGGLE_ENGINEERING_BAY" });
+    });
+
+    this.root.querySelector("#btn-toggle-genesis")?.addEventListener("click", () => {
+      this.store.dispatch({ type: "TOGGLE_SANDBOX_MODE" });
     });
   }
 

@@ -41,6 +41,28 @@ export function createInitialState() {
     },
     customSatellites: [],
     activeCosmicEvent: null,
+    discoveryPoints: 200,
+    installedUpgrades: [],
+    aiCompanion: {
+      enabled: true,
+      isSpeaking: false,
+      lastMessage: "Holo-systems online. Ready to explore the stars, Captain!",
+      mood: "calm",
+    },
+    setiScanner: {
+      active: false,
+      frequencyMhz: 1420.405,
+      activeSignal: null,
+    },
+    wormholeState: {
+      inTransit: false,
+      destinationId: null,
+    },
+    sandboxState: {
+      active: false,
+      star: null,
+      bodies: [],
+    },
     flightTelemetry: {
       currentSpeedC: 0,
       lorentzFactor: 1,
@@ -60,6 +82,9 @@ export function createInitialState() {
       isPhotoModeOpen: false,
       isLogbookOpen: false,
       isProbeBuilderOpen: false,
+      isSetiOpen: false,
+      isEngineeringOpen: false,
+      isSandboxOpen: false,
       constellationsVisible: false,
       searchQuery: "",
       audioMuted: false,
@@ -173,6 +198,7 @@ export function reducer(state, action) {
       if (exists) return state;
       return {
         ...state,
+        discoveryPoints: state.discoveryPoints + 50,
         discoveries: [...state.discoveries, { ...action.payload, discoveredAt: Date.now() }],
       };
     }
@@ -229,6 +255,7 @@ export function reducer(state, action) {
       return {
         ...state,
         activeExpedition: null,
+        discoveryPoints: alreadyCompleted ? state.discoveryPoints : state.discoveryPoints + 150,
         completedExpeditions: alreadyCompleted
           ? state.completedExpeditions
           : [...state.completedExpeditions, { expeditionId, badge, completedAt }],
@@ -309,6 +336,122 @@ export function reducer(state, action) {
           ...state.ui,
           isProbeBuilderOpen: action.payload ?? !state.ui.isProbeBuilderOpen,
         },
+      };
+
+    case ActionTypes.TOGGLE_SETI_SCANNER:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isSetiOpen: action.payload ?? !state.ui.isSetiOpen,
+        },
+      };
+
+    case ActionTypes.SET_SETI_FREQUENCY:
+      return {
+        ...state,
+        setiScanner: { ...state.setiScanner, frequencyMhz: action.payload },
+      };
+
+    case ActionTypes.INTERCEPT_SETI_SIGNAL:
+      return {
+        ...state,
+        setiScanner: { ...state.setiScanner, activeSignal: action.payload },
+      };
+
+    case ActionTypes.TOGGLE_AI_COMPANION:
+      return {
+        ...state,
+        aiCompanion: {
+          ...state.aiCompanion,
+          enabled: action.payload ?? !state.aiCompanion.enabled,
+        },
+      };
+
+    case ActionTypes.TRIGGER_AI_SPEECH:
+      return {
+        ...state,
+        aiCompanion: {
+          ...state.aiCompanion,
+          lastMessage: action.payload.message,
+          mood: action.payload.mood || "neutral",
+        },
+      };
+
+    case ActionTypes.SET_AI_SPEAKING:
+      return {
+        ...state,
+        aiCompanion: {
+          ...state.aiCompanion,
+          isSpeaking: action.payload,
+        },
+      };
+
+    case ActionTypes.TOGGLE_ENGINEERING_BAY:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isEngineeringOpen: action.payload ?? !state.ui.isEngineeringOpen,
+        },
+      };
+
+    case ActionTypes.UNLOCK_SHIP_UPGRADE: {
+      const { upgradeId, cost } = action.payload;
+      if (state.installedUpgrades.includes(upgradeId) || state.discoveryPoints < cost) {
+        return state;
+      }
+      return {
+        ...state,
+        discoveryPoints: state.discoveryPoints - cost,
+        installedUpgrades: [...state.installedUpgrades, upgradeId],
+      };
+    }
+
+    case ActionTypes.ADD_DISCOVERY_POINTS:
+      return {
+        ...state,
+        discoveryPoints: state.discoveryPoints + action.payload,
+      };
+
+    case ActionTypes.ENTER_WORMHOLE:
+      return {
+        ...state,
+        wormholeState: { inTransit: true, destinationId: action.payload },
+      };
+
+    case ActionTypes.EXIT_WORMHOLE:
+      return {
+        ...state,
+        wormholeState: { inTransit: false, destinationId: null },
+      };
+
+    case ActionTypes.TOGGLE_SANDBOX_MODE:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isSandboxOpen: action.payload ?? !state.ui.isSandboxOpen,
+        },
+        sandboxState: {
+          ...state.sandboxState,
+          active: action.payload ?? !state.sandboxState.active,
+        },
+      };
+
+    case ActionTypes.ADD_SANDBOX_BODY:
+      return {
+        ...state,
+        sandboxState: {
+          ...state.sandboxState,
+          bodies: [...state.sandboxState.bodies, action.payload],
+        },
+      };
+
+    case ActionTypes.CLEAR_SANDBOX:
+      return {
+        ...state,
+        sandboxState: { active: false, star: null, bodies: [] },
       };
 
     default:
