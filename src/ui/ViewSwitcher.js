@@ -26,14 +26,14 @@ export class ViewSwitcher {
     this.onToggleRadio = options.onToggleRadio;
     this._render();
     this._unsubscribe = store.subscribe(
-      (s) => ({
-        mode: s.cameraMode,
-        constellations: s.ui.constellationsVisible,
-      }),
       ({ mode, constellations }) => {
         this._highlight(mode);
         this._highlightConstellations(constellations);
-      }
+      },
+      (s) => ({
+        mode: s.cameraMode,
+        constellations: s.ui.constellationsVisible,
+      })
     );
     this._highlight(store.getState().cameraMode);
   }

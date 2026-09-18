@@ -84,10 +84,42 @@ describe("Store / reducer", () => {
     expect(() => store.dispatch({})).toThrow();
   });
 
+  it("all Actions helper functions produce action objects with a valid string type", () => {
+    const store = new Store();
+    const actionList = [
+      Actions.setScale(1),
+      Actions.selectObject("mars"),
+      Actions.setTarget("mars"),
+      Actions.clearTarget(),
+      Actions.setFlightStatus(FlightStatus.WARP),
+      Actions.setFlightMode(FlightMode.AUTOPILOT),
+      Actions.updateTelemetry({ currentSpeedC: 0.1 }),
+      Actions.setCameraMode(CameraMode.COCKPIT),
+      Actions.setSearchQuery("jupiter"),
+      Actions.toggleDetailPanel(true),
+      Actions.toggleHabitability(true),
+      Actions.toggleSatelliteList(true),
+      Actions.toggleAudioMuted(true),
+      Actions.toggleHud(false),
+      Actions.togglePhotoMode(true),
+      Actions.toggleLogbook(true),
+      Actions.toggleConstellations(true),
+      Actions.recordDiscovery({ id: "mars", name: "Mars" }),
+      Actions.pushHistory({ id: "mars" }),
+      Actions.reportError(new Error("test")),
+      Actions.clearError(),
+    ];
+
+    for (const action of actionList) {
+      expect(action).toHaveProperty("type");
+      expect(typeof action.type).toBe("string");
+      expect(action.type.length).toBeGreaterThan(0);
+      expect(() => store.dispatch(action)).not.toThrow();
+    }
+  });
+
   it("dispatch() survives a throwing reducer path by recording an error instead of crashing", () => {
     const store = new Store();
-    // SELECT_OBJECT with a payload that reducer handles fine; instead simulate
-    // a bad custom action type routed through dispatch directly.
     expect(() => store.dispatch({ type: "SET_SCALE", payload: {} })).not.toThrow();
   });
 });

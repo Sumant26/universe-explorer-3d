@@ -220,13 +220,37 @@ export class Store {
    * Subscribe to the whole store, or to a derived slice via `selector`.
    * The callback only fires when the selected value changes (by reference
    * or shallow value for primitives), so subscribers don't do wasted work.
-   * @param {Function} cb - `(value, prevValue, action) => void`
-   * @param {Function} [selector] - `(state) => value`, defaults to identity
+   * @param {Function|string} arg1 - `(value, prevValue, action) => void` or property key
+   * @param {Function} [arg2] - `(state) => value`, defaults to identity
    * @returns {Function} unsubscribe function
    */
-  subscribe(cb, selector = (s) => s) {
-    if (typeof cb !== "function") throw new TypeError("subscribe() requires a callback function");
-    const entry = { selector, cb, lastValue: selector(this._state) };
+  subscribe(arg1, arg2 = (s) => s) {
+    if (!arg1 || (typeof arg1 !== "function" && typeof arg1 !== "string")) {
+      throw new TypeError("subscribe() requires a callback function");
+    }
+
+    let cb;
+    let selector;
+
+    if (typeof arg1 === "string") {
+      if (typeof arg2 !== "function") {
+        throw new TypeError("subscribe() requires a callback function");
+      }
+      selector = (s) => s[arg1];
+      cb = arg2;
+    } else {
+      cb = arg1;
+      selector = typeof arg2 === "function" ? arg2 : (s) => s;
+    }
+
+    let initialValue;
+    try {
+      initialValue = selector(this._state);
+    } catch {
+      initialValue = undefined;
+    }
+
+    const entry = { selector, cb, lastValue: initialValue };
     this._subscribers.add(entry);
     return () => this._subscribers.delete(entry);
   }

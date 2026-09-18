@@ -71,7 +71,9 @@ export function createCelestialTexture(bodyId, size = 512) {
       break;
     case "moon":
     case "phobos":
+    case "deimos":
     case "ceres":
+    case "vesta":
       drawMoonTexture(ctx, size);
       break;
     case "venus":
@@ -91,6 +93,52 @@ export function createCelestialTexture(bodyId, size = 512) {
       break;
     case "neptune":
       drawNeptuneTexture(ctx, size);
+      break;
+    case "io":
+      drawIoTexture(ctx, size);
+      break;
+    case "enceladus":
+      drawEnceladusTexture(ctx, size);
+      break;
+    case "pluto":
+      drawPlutoTexture(ctx, size);
+      break;
+    case "charon":
+      drawCharonTexture(ctx, size);
+      break;
+    case "55-cancri-e":
+      drawLavaWorldTexture(ctx, size);
+      break;
+    case "hd-189733-b":
+      drawCobaltStormTexture(ctx, size);
+      break;
+    case "wasp-76b":
+      drawWaspTexture(ctx, size);
+      break;
+    case "trappist-1e":
+    case "trappist-1f":
+    case "kepler-452b":
+    case "kepler-22b":
+    case "kepler-186f":
+    case "k2-18b":
+    case "proxima-b":
+      drawHabitableExoTexture(ctx, size, bodyId);
+      break;
+    case "sedna":
+    case "makemake":
+      drawSednaTexture(ctx, size);
+      break;
+    case "haumea":
+    case "eris":
+      drawIcyDwarfTexture(ctx, size);
+      break;
+    case "ganymede":
+    case "callisto":
+    case "iapetus":
+    case "mimas":
+    case "miranda":
+    case "triton":
+      drawIcyMoonTexture(ctx, size, bodyId);
       break;
     default:
       drawGenericRockyTexture(ctx, size);
@@ -637,4 +685,267 @@ export function createEarthNightLightsTexture(size = 512) {
 
   ctx.putImageData(imgData, 0, 0);
   return new THREE.CanvasTexture(canvas);
+}
+
+function drawIoTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 8, (y / size) * 8, 4);
+      const spots = noise2D((x / size) * 16, (y / size) * 16);
+
+      // Sulfur yellow base with orange/black volcanic caldera scars
+      if (spots > 0.78) {
+        // Dark volcanic caldera (Patera)
+        data[idx] = 40;
+        data[idx + 1] = 20;
+        data[idx + 2] = 10;
+      } else if (spots > 0.65) {
+        // Sulfur dioxide snow / red-orange halo
+        data[idx] = 220;
+        data[idx + 1] = 80;
+        data[idx + 2] = 20;
+      } else {
+        // Mottled yellow-green sulfur crust
+        data[idx] = Math.floor(210 + n * 45);
+        data[idx + 1] = Math.floor(180 + n * 40);
+        data[idx + 2] = Math.floor(30 + n * 30);
+      }
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawEnceladusTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    const isSouthPolar = y > size * 0.75;
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 10, (y / size) * 10, 4);
+      let r = Math.floor(240 + n * 15);
+      let g = Math.floor(245 + n * 10);
+      let b = 255;
+
+      // Blue tiger stripe fissures near south pole
+      if (isSouthPolar) {
+        const stripe = Math.sin((x / size) * Math.PI * 8 + n * 3);
+        if (Math.abs(stripe) < 0.15) {
+          r = 70;
+          g = 160;
+          b = 230;
+        }
+      }
+      data[idx] = r;
+      data[idx + 1] = g;
+      data[idx + 2] = b;
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawPlutoTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    const ny = (y / size) * 2 - 1;
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const nx = (x / size) * 2 - 1;
+      const n = fbm((x / size) * 6, (y / size) * 6, 4);
+
+      // Heart-shaped Tombaugh Regio region around center
+      const heartX = nx - 0.1;
+      const heartY = ny + 0.1;
+      const inHeart = Math.hypot(heartX, heartY) < 0.38 && (Math.abs(heartX) < 0.35 || heartY < 0.2);
+
+      if (inHeart && n > 0.35) {
+        // Bright nitrogen ice glacier
+        data[idx] = 240;
+        data[idx + 1] = 230;
+        data[idx + 2] = 220;
+      } else {
+        // Reddish tholin and dark cratered terrain
+        data[idx] = Math.floor(160 + n * 50);
+        data[idx + 1] = Math.floor(110 + n * 40);
+        data[idx + 2] = Math.floor(80 + n * 30);
+      }
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawCharonTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    const isNorthPole = y < size * 0.28;
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 6, (y / size) * 6, 4);
+
+      if (isNorthPole) {
+        // Mordor Macula red-brown pole
+        data[idx] = 160;
+        data[idx + 1] = 80;
+        data[idx + 2] = 60;
+      } else {
+        // Grey chasm-fractured surface
+        const val = Math.floor(130 + n * 50);
+        data[idx] = val;
+        data[idx + 1] = Math.floor(val * 0.95);
+        data[idx + 2] = Math.floor(val * 0.92);
+      }
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawLavaWorldTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 12, (y / size) * 12, 5);
+
+      if (n > 0.58) {
+        // Blazing molten lava fissures
+        data[idx] = 255;
+        data[idx + 1] = Math.floor(80 + (n - 0.58) * 400);
+        data[idx + 2] = 0;
+      } else {
+        // Obsidian black cooled basalt crust
+        const val = Math.floor(20 + n * 30);
+        data[idx] = val + 15;
+        data[idx + 1] = val;
+        data[idx + 2] = val;
+      }
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawCobaltStormTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 8 + Math.sin((y / size) * 10), (y / size) * 4, 4);
+      data[idx] = Math.floor(10 + n * 30);
+      data[idx + 1] = Math.floor(60 + n * 80);
+      data[idx + 2] = Math.floor(180 + n * 75);
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawWaspTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 6, (y / size) * 6, 4);
+      data[idx] = Math.floor(160 + n * 80);
+      data[idx + 1] = Math.floor(40 + n * 40);
+      data[idx + 2] = Math.floor(20 + n * 20);
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawHabitableExoTexture(ctx, size, bodyId) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    const lat = (y / size - 0.5) * Math.PI;
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const lon = (x / size) * Math.PI * 2;
+      const n = fbm(Math.cos(lon) * 2.5 + 4, Math.sin(lon) * 2.5 + Math.sin(lat) * 2.5, 4);
+
+      if (n > 0.5) {
+        // Alien continents (verdant green/emerald or warm terra)
+        data[idx] = bodyId.includes("kepler") ? 45 : 60;
+        data[idx + 1] = 140 + Math.floor(n * 40);
+        data[idx + 2] = 70;
+      } else {
+        // Deep turquoise / sapphire ocean
+        data[idx] = 15;
+        data[idx + 1] = 70 + Math.floor(n * 50);
+        data[idx + 2] = 175 + Math.floor(n * 40);
+      }
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawSednaTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 6, (y / size) * 6, 4);
+      data[idx] = Math.floor(180 + n * 50);
+      data[idx + 1] = Math.floor(65 + n * 30);
+      data[idx + 2] = Math.floor(45 + n * 20);
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawIcyDwarfTexture(ctx, size) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 8, (y / size) * 8, 4);
+      const val = Math.floor(215 + n * 40);
+      data[idx] = val;
+      data[idx + 1] = val;
+      data[idx + 2] = Math.min(val + 10, 255);
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function drawIcyMoonTexture(ctx, size, bodyId) {
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      const n = fbm((x / size) * 8, (y / size) * 8, 4);
+      if (bodyId === "iapetus" && x < size * 0.5) {
+        // Dark leading hemisphere
+        data[idx] = 35;
+        data[idx + 1] = 30;
+        data[idx + 2] = 25;
+      } else {
+        const val = Math.floor(150 + n * 60);
+        data[idx] = val;
+        data[idx + 1] = Math.floor(val * 0.96);
+        data[idx + 2] = Math.floor(val * 0.94);
+      }
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
 }

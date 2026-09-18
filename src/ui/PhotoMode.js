@@ -43,8 +43,8 @@ export class PhotoMode {
     this._wireEvents();
 
     this.store.subscribe(
-      (s) => s.ui.isPhotoModeOpen,
-      (open) => this._onStateChange(open)
+      (open) => this._onStateChange(open),
+      (s) => s.ui.isPhotoModeOpen
     );
   }
 

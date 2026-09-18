@@ -77,8 +77,8 @@ async function bootstrap() {
 
   const constellationOverlay = new ConstellationOverlay(engine.scene);
   store.subscribe(
-    (s) => s.ui.constellationsVisible,
-    (visible) => constellationOverlay.toggle(visible)
+    (visible) => constellationOverlay.toggle(visible),
+    (s) => s.ui.constellationsVisible
   );
 
   // Real-time gravitational slingshot trajectory projection line

@@ -64,8 +64,8 @@ export class LogbookModal {
     this._wireEvents();
 
     this.store.subscribe(
-      (s) => ({ isOpen: s.ui.isLogbookOpen, discoveries: s.discoveries }),
-      ({ isOpen }) => this._onStateChange(isOpen)
+      ({ isOpen }) => this._onStateChange(isOpen),
+      (s) => ({ isOpen: s.ui.isLogbookOpen, discoveries: s.discoveries })
     );
   }
 

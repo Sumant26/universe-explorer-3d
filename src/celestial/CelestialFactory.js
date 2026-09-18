@@ -148,6 +148,23 @@ function buildRockyBody(body) {
     group.add(uranusRing);
   }
 
+  // 4. Haumea Crystalline Ice Ring & Ellipsoid Shape
+  if (body.id === "haumea") {
+    mesh.scale.set(1.4, 0.9, 0.7);
+    const haumeaRingGeom = new THREE.RingGeometry(radius * 1.6, radius * 1.9, 48);
+    haumeaRingGeom.rotateX(Math.PI / 2);
+    const haumeaRingMat = new THREE.MeshStandardMaterial({
+      color: 0xd9e3eb,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide,
+      roughness: 0.8,
+    });
+    const haumeaRing = new THREE.Mesh(haumeaRingGeom, haumeaRingMat);
+    haumeaRing.name = `rings:${body.id}`;
+    group.add(haumeaRing);
+  }
+
   // Atmospheric Fresnel Rim Glow
   const hasAtmosphere = body.environment.atmosphericPressureAtm > 0.01;
   if (hasAtmosphere) {
@@ -189,6 +206,24 @@ function buildStar(body) {
 
   const group = new THREE.Group();
   group.add(mesh, flareMesh, light);
+
+  // Relativistic Pulsar / Magnetar polar light cones
+  if (body.tags.includes("pulsar") || body.id.includes("pulsar") || body.tags.includes("magnetar")) {
+    const beamGeom = new THREE.ConeGeometry(radius * 0.45, radius * 6, 24, 1, true);
+    beamGeom.translate(0, radius * 3, 0);
+    const beamMat = new THREE.MeshBasicMaterial({
+      color: body.colorHex,
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    });
+    const northBeam = new THREE.Mesh(beamGeom, beamMat);
+    const southBeam = new THREE.Mesh(beamGeom, beamMat);
+    southBeam.rotation.x = Math.PI;
+    group.add(northBeam, southBeam);
+  }
+
   return group;
 }
 
@@ -270,6 +305,22 @@ function buildGalaxy(body) {
 
   const group = new THREE.Group();
   group.add(points, core);
+
+  // Relativistic Plasma Jet for Active Galaxies (M87 / Centaurus A)
+  if (body.id === "messier-87" || body.id === "centaurus-a") {
+    const jetGeom = new THREE.CylinderGeometry(0.04, 0.4, armRadius * 0.85, 16);
+    jetGeom.translate(0, armRadius * 0.42, 0);
+    const jetMat = new THREE.MeshBasicMaterial({
+      color: 0x88ddff,
+      transparent: true,
+      opacity: 0.65,
+      blending: THREE.AdditiveBlending,
+    });
+    const jetMesh = new THREE.Mesh(jetGeom, jetMat);
+    jetMesh.rotation.z = 0.55;
+    group.add(jetMesh);
+  }
+
   return group;
 }
 
