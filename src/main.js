@@ -28,6 +28,7 @@ import { predictOrbitalTrajectory } from "./physics/OrbitalTrajectoryPredictor.j
 import { calculateGravitationalTimeDilation } from "./physics/RelativityEngine.js";
 import { SoundSynthesizer } from "./audio/SoundSynthesizer.js";
 import { SpaceRadio } from "./audio/SpaceRadio.js";
+import { CassetteDeck } from "./audio/CassetteDeck.js";
 import { NavigationSearch } from "./ui/NavigationSearch.js";
 import { DetailPanel } from "./ui/DetailPanel.js";
 import { HabitabilityMatrix } from "./ui/HabitabilityMatrix.js";
@@ -38,6 +39,9 @@ import { TelemetryHUD } from "./ui/TelemetryHUD.js";
 import { RadarCanvas } from "./ui/RadarCanvas.js";
 import { PhotoMode } from "./ui/PhotoMode.js";
 import { LogbookModal } from "./ui/LogbookModal.js";
+import { ProbeBuilderModal } from "./ui/ProbeBuilderModal.js";
+import { SurfaceLanderView } from "./celestial/SurfaceLanderView.js";
+import { CosmicEventsManager } from "./celestial/CosmicEventsManager.js";
 import { initHUDController } from "./ui/HUDController.js";
 
 bootstrap().catch((err) => showFatalError(err));
@@ -94,9 +98,19 @@ async function bootstrap() {
   engine.scene.add(trajectoryLine);
 
   const { celestialGroups, satelliteGroups } = buildUniverse(engine);
+  const cosmicEventsManager = new CosmicEventsManager(engine.scene, store, {
+    onShowToast: (msg) => showToast(msg),
+  });
 
   setBootMessage("Warming up the engines…", 75);
-  const { ship, update: updateShip, bobbleheadPhysics, applyCabinTheme, applyCabinLighting } = buildSpaceship();
+  const {
+    ship,
+    update: updateShip,
+    bobbleheadPhysics,
+    applyCabinTheme,
+    applyCabinLighting,
+    applyHullLivery,
+  } = buildSpaceship();
   engine.scene.add(ship);
   const earthPos = celestialGroups.get("earth")?.position ?? new THREE.Vector3();
   // Spawn in comfortable Earth orbit facing directly outward into deep space
@@ -104,7 +118,7 @@ async function bootstrap() {
   ship.userData.forward = new THREE.Vector3(0, 0, 1);
   ship.userData.velocity = { x: 0, y: 0, z: 0 };
 
-  // Cabin Theme & Lighting Level subscriptions
+  // Cabin Theme, Lighting Level & Hull Livery subscriptions
   store.subscribe(
     (theme) => applyCabinTheme?.(theme),
     (s) => s.cabinTheme
@@ -113,18 +127,32 @@ async function bootstrap() {
     (level) => applyCabinLighting?.(level),
     (s) => s.cabinLightLevel
   );
+  store.subscribe(
+    (livery) => applyHullLivery?.(livery),
+    (s) => s.hullLivery
+  );
 
   const flightCamera = new FlightCamera(engine.camera, ship);
   const warpController = new WarpController({ scene: engine.scene, ship, store });
   const manualNavigator = new ManualNavigator();
   const audio = new SoundSynthesizer();
   const spaceRadio = new SpaceRadio();
+  const cassetteDeck = new CassetteDeck();
+
+  const surfaceLanderView = new SurfaceLanderView(document.body, store, {
+    onShowToast: (msg) => showToast(msg),
+  });
+
+  const _probeBuilder = new ProbeBuilderModal(document.body, store, {
+    onShowToast: (msg) => showToast(msg),
+  });
 
   const cockpitInteractions = new CockpitInteractions({
     camera: engine.camera,
     shipGroup: ship,
     audio,
     spaceRadio,
+    cassetteDeck,
     bobbleheadProp: bobbleheadPhysics,
     onEngageWarp: () => engageAutopilotIfReady(),
     onShowToast: (msg) => showToast(msg),
@@ -190,10 +218,10 @@ async function bootstrap() {
     manualNavigator,
     audio,
     spaceRadio,
+    cassetteDeck,
     flightCamera,
     store,
-    cockpitInteractions,
-    spaceRadio
+    cockpitInteractions
   );
 
   // URL Hash Deep Linking & Sync
@@ -313,11 +341,17 @@ async function bootstrap() {
   let accumulatedOrbitSeconds = 0;
 
   engine.onTick((dt, _elapsed) => {
+    if (surfaceLanderView.active) {
+      surfaceLanderView.update(dt, engine.renderer);
+      return;
+    }
+
     const timeWarp = store.getState().timeWarp || 1;
     accumulatedOrbitSeconds += dt * timeWarp;
 
     updateOrbits(accumulatedOrbitSeconds, celestialGroups, satelliteGroups);
     warpController.update(dt, accumulatedOrbitSeconds);
+    cosmicEventsManager.update(dt, ship.position);
 
     // Planetary proximity sonification
     if (spaceRadio && spaceRadio.isPlaying) {
@@ -665,11 +699,24 @@ function mountUI(
 }
 
 /** @private keyboard/mouse input plumbing + first-gesture audio unlock. */
-function wireInputAndAudio(engine, ship, manualNavigator, audio, spaceRadio, flightCamera, store, cockpitInteractions) {
+function wireInputAndAudio(
+  engine,
+  ship,
+  manualNavigator,
+  audio,
+  spaceRadio,
+  cassetteDeck,
+  flightCamera,
+  store,
+  cockpitInteractions
+) {
   const unlockAudio = () => {
     audio.init();
     if (spaceRadio && audio._ctx) {
       spaceRadio.setContext(audio._ctx);
+    }
+    if (cassetteDeck && audio._ctx) {
+      cassetteDeck.setContext(audio._ctx);
     }
     window.removeEventListener("pointerdown", unlockAudio);
     window.removeEventListener("keydown", unlockAudio);
@@ -697,6 +744,14 @@ function wireInputAndAudio(engine, ship, manualNavigator, audio, spaceRadio, fli
       store.dispatch(Actions.togglePhotoMode(true));
     } else if (e.code === "KeyL") {
       store.dispatch(Actions.toggleLogbook(true));
+    } else if (e.code === "KeyB") {
+      store.dispatch(Actions.toggleProbeBuilder());
+    } else if (e.code === "KeyK") {
+      if (cassetteDeck) {
+        const isPlaying = cassetteDeck.togglePlay();
+        const tape = cassetteDeck.getCurrentTape();
+        showToast(isPlaying ? `📼 Cassette: "${tape.title}"` : "📼 Cassette: Paused");
+      }
     } else if (e.code === "KeyR") {
       const isPowerOn = spaceRadio.togglePower();
       showToast(isPowerOn ? `📻 ${spaceRadio.getCurrentStation().name}` : "📻 Space Radio: OFF");

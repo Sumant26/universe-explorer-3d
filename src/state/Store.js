@@ -11,7 +11,7 @@
  *    every transition unit-testable without touching Three.js or the DOM.
  */
 
-import { ActionTypes, FlightStatus, FlightMode, CameraMode, CabinTheme } from "./StateActions.js";
+import { ActionTypes, FlightStatus, FlightMode, CameraMode, CabinTheme, HullLivery } from "./StateActions.js";
 
 /** @returns {object} A fresh copy of the initial application state. */
 export function createInitialState() {
@@ -24,10 +24,23 @@ export function createInitialState() {
     cameraMode: CameraMode.THIRD_PERSON,
     cabinTheme: CabinTheme.MAHOGANY,
     cabinLightLevel: 1.0,
+    hullLivery: HullLivery.APOLLO_WHITE,
     timeWarp: 1,
     radioStationIndex: 0,
     activeExpedition: null,
     completedExpeditions: [],
+    expeditionProgress: {},
+    landerState: {
+      active: false,
+      targetId: null,
+      soilAnalysis: null,
+    },
+    cassetteState: {
+      currentTape: "pale-blue-dot",
+      isPlaying: false,
+    },
+    customSatellites: [],
+    activeCosmicEvent: null,
     flightTelemetry: {
       currentSpeedC: 0,
       lorentzFactor: 1,
@@ -46,6 +59,7 @@ export function createInitialState() {
       isSatelliteListOpen: false,
       isPhotoModeOpen: false,
       isLogbookOpen: false,
+      isProbeBuilderOpen: false,
       constellationsVisible: false,
       searchQuery: "",
       audioMuted: false,
@@ -220,6 +234,82 @@ export function reducer(state, action) {
           : [...state.completedExpeditions, { expeditionId, badge, completedAt }],
       };
     }
+
+    case ActionTypes.VISIT_EXPEDITION_WAYPOINT: {
+      const { expeditionId, targetId } = action.payload;
+      const current = state.expeditionProgress[expeditionId] || { visited: [], completed: false };
+      if (current.visited.includes(targetId)) return state;
+      const visited = [...current.visited, targetId];
+      return {
+        ...state,
+        expeditionProgress: {
+          ...state.expeditionProgress,
+          [expeditionId]: { visited, completed: visited.length >= 3 },
+        },
+      };
+    }
+
+    case ActionTypes.DEPLOY_LANDER:
+      return {
+        ...state,
+        cameraMode: CameraMode.SURFACE,
+        landerState: { active: true, targetId: action.payload, soilAnalysis: null },
+      };
+
+    case ActionTypes.CLOSE_LANDER:
+      return {
+        ...state,
+        cameraMode: CameraMode.COCKPIT,
+        landerState: { active: false, targetId: null, soilAnalysis: null },
+      };
+
+    case ActionTypes.SET_LANDER_SOIL_ANALYSIS:
+      return {
+        ...state,
+        landerState: { ...state.landerState, soilAnalysis: action.payload },
+      };
+
+    case ActionTypes.SET_CASSETTE_TAPE:
+      return {
+        ...state,
+        cassetteState: { ...state.cassetteState, currentTape: action.payload },
+      };
+
+    case ActionTypes.SET_CASSETTE_PLAYING:
+      return {
+        ...state,
+        cassetteState: { ...state.cassetteState, isPlaying: action.payload },
+      };
+
+    case ActionTypes.ADD_CUSTOM_SATELLITE:
+      return {
+        ...state,
+        customSatellites: [...state.customSatellites, action.payload],
+      };
+
+    case ActionTypes.REMOVE_CUSTOM_SATELLITE:
+      return {
+        ...state,
+        customSatellites: state.customSatellites.filter((s) => s.id !== action.payload),
+      };
+
+    case ActionTypes.SET_HULL_LIVERY:
+      return { ...state, hullLivery: action.payload };
+
+    case ActionTypes.TRIGGER_COSMIC_EVENT:
+      return { ...state, activeCosmicEvent: action.payload };
+
+    case ActionTypes.DISMISS_COSMIC_EVENT:
+      return { ...state, activeCosmicEvent: null };
+
+    case ActionTypes.TOGGLE_PROBE_BUILDER:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isProbeBuilderOpen: action.payload ?? !state.ui.isProbeBuilderOpen,
+        },
+      };
 
     default:
       return state;

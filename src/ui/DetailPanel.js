@@ -72,6 +72,11 @@ export class DetailPanel {
     this.root.querySelector('[data-action="open-habitability"]')?.addEventListener("click", () => {
       this.store.dispatch(Actions.toggleHabitability(true));
     });
+    this.root.querySelector('[data-action="deploy-lander"]')?.addEventListener("click", (e) => {
+      const targetId = e.currentTarget.dataset.targetId;
+      this.store.dispatch(Actions.deployLander(targetId));
+      this.close();
+    });
   }
 
   /** @private */
@@ -94,12 +99,21 @@ export class DetailPanel {
 
     const atmosphere = normalizeAtmosphere(body.environment.composition);
     const isHabitable = habitability.score >= 45;
+    const canLand = ["moon", "mars", "europa", "titan", "enceladus"].includes(body.id);
 
     return `
       <div class="detail-panel">
         <button type="button" class="detail-close" aria-label="Close details">&times;</button>
         <h2 class="detail-title">${escapeHtml(body.name)}</h2>
         <p class="detail-description">${escapeHtml(body.description)}</p>
+
+        ${
+          canLand
+            ? `<button type="button" class="detail-lander-btn" data-action="deploy-lander" data-target-id="${body.id}">
+                 🪐 Deploy Surface Exploration Probe
+               </button>`
+            : ""
+        }
 
         <dl class="detail-fields">
           <div><dt>Location</dt><dd>${escapeHtml(body.location)}</dd></div>

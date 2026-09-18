@@ -286,6 +286,30 @@ export function buildSpaceship() {
     if (warmCabinLight) warmCabinLight.intensity = clamped * 0.65;
   }
 
+  function applyHullLivery(liveryName) {
+    const mainHull = exterior.getObjectByName("main-hull");
+    if (!mainHull || !mainHull.material) return;
+
+    if (liveryName === "SOLAR_GOLD") {
+      mainHull.material.color.setHex(0xffd700);
+      mainHull.material.metalness = 0.85;
+      mainHull.material.roughness = 0.15;
+    } else if (liveryName === "STEALTH_CARBON") {
+      mainHull.material.color.setHex(0x18181c);
+      mainHull.material.metalness = 0.3;
+      mainHull.material.roughness = 0.7;
+    } else if (liveryName === "DEEP_BRASS") {
+      mainHull.material.color.setHex(COZY_PALETTE.vintageBrass);
+      mainHull.material.metalness = 0.7;
+      mainHull.material.roughness = 0.3;
+    } else {
+      // APOLLO_WHITE default
+      mainHull.material.color.setHex(COZY_PALETTE.porcelainCream);
+      mainHull.material.metalness = 0.15;
+      mainHull.material.roughness = 0.45;
+    }
+  }
+
   return {
     ship,
     cockpitInterior,
@@ -298,6 +322,7 @@ export function buildSpaceship() {
     holoGlobe,
     applyCabinTheme,
     applyCabinLighting,
+    applyHullLivery,
     update,
   };
 }
@@ -712,6 +737,70 @@ function buildCozyCockpitInterior() {
   const headRest = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.14, 0.07), seatMat);
   headRest.position.set(0, 0.2, 0.48);
 
+  // 13. Dashboard Terrarium / Hydroponic Bonsai
+  const terrariumGroup = new THREE.Group();
+  terrariumGroup.name = "dash-terrarium";
+  terrariumGroup.position.set(-0.28, -0.04, -0.15);
+
+  const terrariumPot = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.024, 0.018, 0.02, 12),
+    new THREE.MeshStandardMaterial({ color: 0x2b2520, roughness: 0.8 })
+  );
+  const terrariumDome = new THREE.Mesh(
+    new THREE.SphereGeometry(0.026, 12, 10, 0, Math.PI * 2, 0, Math.PI / 1.8),
+    new THREE.MeshStandardMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.45, roughness: 0.1 })
+  );
+  terrariumDome.position.y = 0.01;
+
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.003, 0.005, 0.025, 6),
+    new THREE.MeshStandardMaterial({ color: 0x4a2a05, roughness: 0.9 })
+  );
+  trunk.position.y = 0.015;
+
+  const foliage = new THREE.Mesh(
+    new THREE.SphereGeometry(0.014, 8, 8),
+    new THREE.MeshStandardMaterial({ color: 0x38b000, roughness: 0.7 })
+  );
+  foliage.position.y = 0.028;
+
+  const blossom = new THREE.Mesh(
+    new THREE.SphereGeometry(0.005, 6, 6),
+    new THREE.MeshBasicMaterial({ color: 0xff70a6 })
+  );
+  blossom.name = "terrarium-blossom";
+  blossom.position.set(0.006, 0.032, 0.004);
+
+  terrariumGroup.add(terrariumPot, terrariumDome, trunk, foliage, blossom);
+
+  // 14. Retro Cassette Player Deck on Dashboard
+  const cassetteGroup = new THREE.Group();
+  cassetteGroup.name = "dash-cassette";
+  cassetteGroup.position.set(0.02, -0.08, -0.08);
+
+  const deckBody = new THREE.Mesh(
+    new THREE.BoxGeometry(0.085, 0.025, 0.05),
+    new THREE.MeshStandardMaterial({ color: 0x1f1915, metalness: 0.4, roughness: 0.6 })
+  );
+  const tapeDoor = new THREE.Mesh(
+    new THREE.BoxGeometry(0.065, 0.018, 0.004),
+    new THREE.MeshStandardMaterial({ color: 0xffc17a, roughness: 0.3 })
+  );
+  tapeDoor.name = "cassette-door";
+  tapeDoor.position.set(0, 0.002, 0.026);
+
+  const reelMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const reelL = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.006, 8), reelMat);
+  reelL.name = "reel-left";
+  reelL.rotateX(Math.PI / 2);
+  reelL.position.set(-0.015, 0.002, 0.028);
+
+  const reelR = reelL.clone();
+  reelR.name = "reel-right";
+  reelR.position.x = 0.015;
+
+  cassetteGroup.add(deckBody, tapeDoor, reelL, reelR);
+
   // 10. Warm Ambient Cabin Lighting
   const warmCabinLight = new THREE.PointLight(COZY_PALETTE.glowLantern, 0.65, 2.2, 2);
   warmCabinLight.position.set(0, 0.2, 0.05);
@@ -729,6 +818,8 @@ function buildCozyCockpitInterior() {
     mugGroup,
     bobbleheadGroup,
     radioGroup,
+    terrariumGroup,
+    cassetteGroup,
     leverGroup,
     paletteSwitch,
     flightStick,

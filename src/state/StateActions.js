@@ -37,6 +37,18 @@ export const ActionTypes = Object.freeze({
   ADVANCE_EXPEDITION: "ADVANCE_EXPEDITION",
   CANCEL_EXPEDITION: "CANCEL_EXPEDITION",
   COMPLETE_EXPEDITION: "COMPLETE_EXPEDITION",
+  VISIT_EXPEDITION_WAYPOINT: "VISIT_EXPEDITION_WAYPOINT",
+  DEPLOY_LANDER: "DEPLOY_LANDER",
+  CLOSE_LANDER: "CLOSE_LANDER",
+  SET_LANDER_SOIL_ANALYSIS: "SET_LANDER_SOIL_ANALYSIS",
+  SET_CASSETTE_TAPE: "SET_CASSETTE_TAPE",
+  SET_CASSETTE_PLAYING: "SET_CASSETTE_PLAYING",
+  ADD_CUSTOM_SATELLITE: "ADD_CUSTOM_SATELLITE",
+  REMOVE_CUSTOM_SATELLITE: "REMOVE_CUSTOM_SATELLITE",
+  SET_HULL_LIVERY: "SET_HULL_LIVERY",
+  TRIGGER_COSMIC_EVENT: "TRIGGER_COSMIC_EVENT",
+  DISMISS_COSMIC_EVENT: "DISMISS_COSMIC_EVENT",
+  TOGGLE_PROBE_BUILDER: "TOGGLE_PROBE_BUILDER",
 });
 
 /** Flight status values. @enum {string} */
@@ -61,6 +73,7 @@ export const CameraMode = Object.freeze({
   THIRD_PERSON: "THIRD_PERSON",
   CINEMATIC: "CINEMATIC",
   PHOTO: "PHOTO",
+  SURFACE: "SURFACE",
 });
 
 /** Cabin interior styling themes. @enum {string} */
@@ -68,6 +81,14 @@ export const CabinTheme = Object.freeze({
   MAHOGANY: "MAHOGANY",
   APOLLO: "APOLLO",
   CYBERPUNK: "CYBERPUNK",
+});
+
+/** Ship exterior hull livery finishes. @enum {string} */
+export const HullLivery = Object.freeze({
+  APOLLO_WHITE: "APOLLO_WHITE",
+  SOLAR_GOLD: "SOLAR_GOLD",
+  STEALTH_CARBON: "STEALTH_CARBON",
+  DEEP_BRASS: "DEEP_BRASS",
 });
 
 function assertString(value, name) {
@@ -115,6 +136,7 @@ export const Actions = {
   togglePhotoMode: (force) => ({ type: ActionTypes.TOGGLE_PHOTO_MODE, payload: force }),
   toggleLogbook: (force) => ({ type: ActionTypes.TOGGLE_LOGBOOK, payload: force }),
   toggleConstellations: (force) => ({ type: ActionTypes.TOGGLE_CONSTELLATIONS, payload: force }),
+  toggleProbeBuilder: (force) => ({ type: ActionTypes.TOGGLE_PROBE_BUILDER, payload: force }),
   recordDiscovery: (discovery) => ({ type: ActionTypes.RECORD_DISCOVERY, payload: discovery }),
   pushHistory: (entry) => ({ type: ActionTypes.PUSH_HISTORY, payload: entry }),
   reportError: (error) => ({
@@ -150,4 +172,44 @@ export const Actions = {
     type: ActionTypes.COMPLETE_EXPEDITION,
     payload: { expeditionId, badge, completedAt: Date.now() },
   }),
+  visitExpeditionWaypoint: (expeditionId, targetId) => ({
+    type: ActionTypes.VISIT_EXPEDITION_WAYPOINT,
+    payload: { expeditionId, targetId },
+  }),
+  deployLander: (targetId) => {
+    assertString(targetId, "target id");
+    return { type: ActionTypes.DEPLOY_LANDER, payload: targetId };
+  },
+  closeLander: () => ({ type: ActionTypes.CLOSE_LANDER }),
+  setLanderSoilAnalysis: (analysis) => ({
+    type: ActionTypes.SET_LANDER_SOIL_ANALYSIS,
+    payload: analysis,
+  }),
+  setCassetteTape: (tapeId) => ({
+    type: ActionTypes.SET_CASSETTE_TAPE,
+    payload: tapeId,
+  }),
+  setCassettePlaying: (isPlaying) => ({
+    type: ActionTypes.SET_CASSETTE_PLAYING,
+    payload: Boolean(isPlaying),
+  }),
+  addCustomSatellite: (satellite) => ({
+    type: ActionTypes.ADD_CUSTOM_SATELLITE,
+    payload: satellite,
+  }),
+  removeCustomSatellite: (satelliteId) => ({
+    type: ActionTypes.REMOVE_CUSTOM_SATELLITE,
+    payload: satelliteId,
+  }),
+  setHullLivery: (livery) => {
+    if (!Object.values(HullLivery).includes(livery)) {
+      throw new RangeError(`Unknown hull livery: ${livery}`);
+    }
+    return { type: ActionTypes.SET_HULL_LIVERY, payload: livery };
+  },
+  triggerCosmicEvent: (eventData) => ({
+    type: ActionTypes.TRIGGER_COSMIC_EVENT,
+    payload: { ...eventData, triggeredAt: Date.now() },
+  }),
+  dismissCosmicEvent: () => ({ type: ActionTypes.DISMISS_COSMIC_EVENT }),
 };

@@ -53,6 +53,9 @@ export class TelemetryHUD {
             <button type="button" class="warp-btn" data-warp="1000">1k×</button>
             <button type="button" class="warp-btn" data-warp="10000">10k×</button>
           </div>
+          <button type="button" class="hud-action-btn" id="btn-open-probe-builder" title="Design & Launch Custom Probes">
+            🛰️ Probe Builder
+          </button>
           <div class="zoom-controls" role="group" aria-label="Camera Zoom">
             <button type="button" class="zoom-btn" data-action="zoom-in" title="Zoom In (+)">+</button>
             <button type="button" class="zoom-btn" data-action="zoom-out" title="Zoom Out (-)">−</button>
@@ -72,6 +75,10 @@ export class TelemetryHUD {
 
     this._els.driveBadge?.addEventListener("click", () => {
       this._onToggleHyperdrive();
+    });
+
+    this.root.querySelector("#btn-open-probe-builder")?.addEventListener("click", () => {
+      this.store.dispatch({ type: "TOGGLE_PROBE_BUILDER", payload: true });
     });
 
     this.root.querySelectorAll(".warp-btn").forEach((btn) => {

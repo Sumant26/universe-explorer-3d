@@ -23,6 +23,7 @@ export class CockpitInteractions {
    *   shipGroup: THREE.Group,
    *   audio?: any,
    *   spaceRadio?: any,
+   *   cassetteDeck?: any,
    *   bobbleheadProp?: any,
    *   onEngageWarp?: () => void,
    *   onShowToast?: (msg: string) => void
@@ -33,6 +34,7 @@ export class CockpitInteractions {
     this.shipGroup = options.shipGroup;
     this.audio = options.audio;
     this.spaceRadio = options.spaceRadio;
+    this.cassetteDeck = options.cassetteDeck;
     this.bobblehead = options.bobbleheadProp;
     this.onEngageWarp = options.onEngageWarp;
     this.onShowToast = options.onShowToast;
@@ -73,6 +75,19 @@ export class CockpitInteractions {
           this.tuneRadio();
           return true;
         }
+        if (
+          obj.name === "dash-cassette" ||
+          obj.name === "cassette-door" ||
+          obj.name === "reel-left" ||
+          obj.name === "reel-right"
+        ) {
+          this.toggleCassette();
+          return true;
+        }
+        if (obj.name === "dash-terrarium" || obj.name === "terrarium-blossom") {
+          this.tapTerrarium();
+          return true;
+        }
         if (obj.name === "warp-lever") {
           this.triggerWarpLever();
           return true;
@@ -94,6 +109,23 @@ export class CockpitInteractions {
     }
 
     return false;
+  }
+
+  toggleCassette() {
+    if (!this.cassetteDeck) return;
+    this.audio?.playChirp();
+    const isPlaying = this.cassetteDeck.togglePlay();
+    const tape = this.cassetteDeck.getCurrentTape();
+    if (isPlaying) {
+      this.onShowToast?.(`📼 Cassette Playing: "${tape.title}" (${tape.year})`);
+    } else {
+      this.onShowToast?.("📼 Cassette Deck: Paused");
+    }
+  }
+
+  tapTerrarium() {
+    this.audio?.playChirp();
+    this.onShowToast?.("🌿 Hydroponic Bonsai is thriving in the warm cabin light!");
   }
 
   tapCoffeeMug() {
