@@ -13,11 +13,23 @@ export class SetiScannerModal {
    * @param {import('../state/Store.js').Store} store
    * @param {{ setiScanner?: SetiScanner, onShowToast?: (msg: string) => void }} options
    */
-  constructor(root, store, options = {}) {
-    this.root = root;
-    this.store = store;
-    this.scanner = options.setiScanner || new SetiScanner();
-    this.onShowToast = options.onShowToast;
+  constructor(rootOrStore, storeOrOptions, options = {}) {
+    if (rootOrStore instanceof HTMLElement) {
+      this.root = rootOrStore;
+      this.store = storeOrOptions;
+      this.scanner = options.setiScanner || new SetiScanner();
+      this.onShowToast = options.onShowToast;
+    } else {
+      this.root = document.body;
+      this.store = rootOrStore;
+      if (storeOrOptions instanceof SetiScanner) {
+        this.scanner = storeOrOptions;
+        this.onShowToast = options.onShowToast;
+      } else {
+        this.scanner = options.setiScanner || storeOrOptions?.setiScanner || new SetiScanner();
+        this.onShowToast = options.onShowToast || storeOrOptions?.onShowToast;
+      }
+    }
 
     this.isOpen = false;
     this.animFrameId = null;

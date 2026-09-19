@@ -72,6 +72,10 @@ export class SetiScanner {
     this._ctx = audioCtx;
   }
 
+  tick(dt) {
+    // Periodic frequency drift or scanner background updates if listening
+  }
+
   setFrequency(mhz) {
     this.frequencyMhz = Math.min(Math.max(Number(mhz) || 1420.0, 1420.0), 1421.0);
     this._updateDemodulator();

@@ -145,8 +145,11 @@ async function bootstrap() {
   }
 
   // Deep Space SETI Radio & Waterfall Spectrogram Scanner
-  const setiScanner = new SetiScanner(store);
-  const _setiModal = new SetiScannerModal(store, setiScanner);
+  const setiScanner = new SetiScanner();
+  const _setiModal = new SetiScannerModal(document.body, store, {
+    setiScanner,
+    onShowToast: (msg) => showToast(msg),
+  });
 
   // Ship Engineering Bay Subsystems
   const _engineeringModal = new EngineeringModal(store);
